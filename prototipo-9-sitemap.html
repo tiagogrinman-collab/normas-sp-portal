@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protótipo · Site Map — 3 arquiteturas (A/B/C)</title>
+<style>
+  :root{
+    --paper:#faf6ee; --paper-2:#f3ecdd; --ink:#2f2718; --ink-2:#5a4f3a; --muted:#8a7e68;
+    --line:#e7dcc7; --gold:#a6791f; --gold-soft:#f0e6cf; --green:#2f6b45; --green-soft:#e4efe6;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.55}
+  /* proto banner (padrão dos demais protótipos) */
+  .proto{background:#0d1b3e;color:#c9d6f2;font-size:12.5px;padding:10px 20px}
+  .proto .row1{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  .proto b{color:#fff}
+  .optsel{display:flex;gap:8px;flex-wrap:wrap}
+  .optsel button{border:1px solid #2e447e;background:#122452;color:#c9d6f2;border-radius:99px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .optsel button.on{background:#fff;color:#0d1b3e;font-weight:700;border-color:#fff}
+  .optsel button .star{color:#ffc94d}
+  .optdesc{font-size:12px;color:#8fa4d4;margin-top:6px;max-width:980px}
+  header.site{background:var(--paper);border-bottom:1px solid var(--line)}
+  header.site .in{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-size:19px;font-weight:800;font-family:var(--serif)}.logo span{color:var(--gold)}
+  .wrap{max-width:1080px;margin:0 auto;padding:30px 24px 90px}
+  .stage{display:none}.stage.on{display:block}
+
+  .thesis{display:flex;gap:16px;align-items:flex-start;margin-bottom:26px}
+  .thesis .big{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:-.01em;line-height:1.15;color:var(--ink)}
+  .thesis .lead{font-family:var(--serif);font-size:18px;line-height:1.7;color:var(--ink-2);max-width:720px;margin-top:8px}
+  .rec-pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--green);background:var(--green-soft);border:1px solid #bcd8c4;border-radius:99px;padding:4px 12px;margin-bottom:12px}
+  .sec{font-family:var(--serif);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:30px 0 14px}
+
+  /* portas — capas Apple Books */
+  .doors{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:18px}
+  .door{cursor:default}
+  .cover{height:150px;border-radius:6px 10px 10px 6px;padding:16px 16px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 12px 26px rgba(60,45,20,.24);position:relative;overflow:hidden}
+  .cover::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:rgba(0,0,0,.20)}
+  .cover .kk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.82}
+  .cover .tt{font-family:var(--serif);font-size:19px;line-height:1.15;font-weight:600}
+  .door .dl{font-size:13px;color:var(--muted);margin-top:9px;line-height:1.45}
+  .door.primary .cover{height:172px}
+
+  /* mapa — árvore em papel */
+  .map{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 3px 14px rgba(60,45,20,.05)}
+  .node{}
+  .row{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:default}
+  .row.head{cursor:pointer}
+  .row.head:hover{background:var(--paper-2)}
+  .row .tw{width:14px;color:var(--gold);font-size:12px;transition:transform .15s;flex:none}
+  .node.open>.row .tw{transform:rotate(90deg)}
+  .row .nm{font-weight:700;color:var(--ink);font-size:15px}
+  .row .nm.serif{font-family:var(--serif);font-weight:600;font-size:16.5px}
+  .row .ds{color:var(--muted);font-size:12.5px}
+  .row .flag{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;white-space:nowrap}
+  .flag.hub{background:var(--gold-soft);color:var(--gold)}
+  .flag.comp{background:#eef0f4;color:#5a6472}
+  .flag.filter{background:#f0ece3;color:var(--muted)}
+  .flag.door{background:#e9eef7;color:#37518c}
+  .kids{margin-left:22px;border-left:1px solid var(--line);padding-left:10px}
+  .collapsible>.kids{display:none}
+  .collapsible.open>.kids{display:block}
+  .leaf{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:14px;color:var(--ink-2)}
+  .leaf .dot{color:var(--gold)}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;padding:4px 12px 10px 34px}
+  .chips span{font-size:12.5px;color:var(--ink-2);background:var(--paper-2);border:1px solid var(--line);border-radius:99px;padding:4px 11px}
+  .transv{margin-top:14px;background:var(--gold-soft);border:1px dashed #dcc79a;border-radius:12px;padding:12px 16px;font-size:13.5px;color:var(--ink-2)}
+  .transv b{color:var(--gold)}
+  .foot{margin-top:20px;font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;background:#a6791f;color:#fff;text-decoration:none;font:600 13.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;padding:11px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(120,90,25,.35)">← Voltar ao Menu</a>
+
+<div class="proto">
+  <div class="row1"><b>Protótipo · Site Map — 3 arquiteturas</b><span>· a mesma pergunta, três respostas: em torno de quê o portal se organiza?</span></div>
+  <div class="optsel">
+    <button data-o="A" class="on">Opção A — Espelho institucional</button>
+    <button data-o="B">Opção B — Cidadão-primeiro</button>
+    <button data-o="C" >Opção C — Híbrido / dupla porta <span class="star">★</span></button>
+  </div>
+  <div class="optdesc" id="optdesc"></div>
+</div>
+
+<header class="site"><div class="in"><div class="logo">Normas<span>.SP</span></div><div style="font-size:13px;color:var(--muted)">Site Map · arquitetura</div></div></header>
+
+<div class="wrap">
+
+<!-- ================= OPÇÃO A ================= -->
+<div class="stage on" id="stA">
+  <div class="thesis"><div>
+    <div class="big">Espelho institucional, corrigido</div>
+    <div class="lead">Organiza-se pela <b>estrutura do Estado</b>. Mantém Espécie e Órgão como portas principais e apenas conserta o que está quebrado: funde as duas buscas de hoje e faz a busca temática funcionar.</div>
+  </div></div>
+
+  <div class="sec">As portas da home</div>
+  <div class="doors">
+    <div class="door"><div class="cover" style="background:linear-gradient(135deg,#334155,#475569)"><div class="kk">Ação</div><div class="tt">Buscar</div></div><div class="dl">Full-text + facetas</div></div>
+    <div class="door"><div class="cover" style="background:linear-gradient(135deg,#5b4a2a,#7a6436)"><div class="kk">Estrutura</div><div class="tt">Espécies de ato</div></div><div class="dl">Decreto, Lei, Portaria…</div></div>
+    <div class="door"><div class="cover" style="background:linear-gradient(135deg,#3a5a45,#4f7a5e)"><div class="kk">Estrutura</div><div class="tt">Órgãos</div></div><div class="dl">Secretarias e entidades</div></div>
+    <div class="door"><div class="cover" style="background:linear-gradient(135deg,#5a3a4a,#7a4f64)"><div class="kk">Estrutura</div><div class="tt">Temas</div></div><div class="dl">Áreas do acervo</div></div>
+    <div class="door"><div class="cover" style="background:linear-gradient(135deg,#2f4a6b,#3f648c)"><div class="kk">Confiança</div><div class="tt">Autenticar</div></div><div class="dl">Verificação</div></div>
+    <div class="door"><div class="cover" style="background:linear-gradient(135deg,#4a4a4a,#666)"><div class="kk">Sobre</div><div class="tt">Tecnologia</div></div><div class="dl">Como garantimos</div></div>
+  </div>
+
+  <div class="sec">O mapa completo</div>
+  <div class="map" id="mapA">
+    <div class="node"><div class="row"><span class="nm serif">Home</span><span class="ds">— hero de busca + acesso por estrutura</span></div><div class="kids">
+      <div class="node collapsible open"><div class="row head"><span class="tw">▸</span><span class="nm">Buscar → Resultados</span></div><div class="kids"><div class="chips"><span>Espécie</span><span>Órgão</span><span>Tema</span><span>Ano</span><span>Vigência</span></div></div></div>
+      <div class="node collapsible"><div class="row head"><span class="tw">▸</span><span class="nm">Espécies de ato</span></div><div class="kids"><div class="chips"><span>Decreto</span><span>Lei</span><span>Lei Complementar</span><span>Portaria</span><span>Resolução</span><span>Instrução Normativa</span></div></div></div>
+      <div class="node collapsible"><div class="row head"><span class="tw">▸</span><span class="nm">Órgãos / Secretarias</span></div><div class="kids"><div class="chips"><span>Fazenda</span><span>Meio Ambiente (SIMA)</span><span>DETRAN</span><span>Educação</span><span>Saúde</span></div></div></div>
+      <div class="node"><div class="row"><span class="nm">Temas</span><span class="ds">— lista de áreas</span></div></div>
+      <div class="node"><div class="row"><span class="nm">Produção por ano</span></div></div>
+      <div class="node"><div class="row"><span class="nm">Página da Norma</span><span class="ds">— texto · sumário · timeline · QR · ajustes de leitura</span><span class="flag hub">Hub</span></div></div>
+      <div class="node"><div class="row"><span class="nm">Autenticar norma</span></div></div>
+      <div class="node"><div class="row"><span class="nm">Sobre / Tecnologia</span></div></div>
+    </div></div>
+  </div>
+  <div class="foot">Institucional primeiro: Espécie e Órgão são destinos de topo. Menor mudança, mas o cidadão que vem do Google/LLM continua em segundo plano.</div>
+</div>
+
+<!-- ================= OPÇÃO B ================= -->
+<div class="stage" id="stB">
+  <div class="thesis"><div>
+    <div class="big">Cidadão-primeiro, orientado a tarefa</div>
+    <div class="lead">Organiza-se pela <b>intenção de quem chega</b>: achar, entender e verificar. Espécie e Órgão deixam de ser portas e viram <i>filtros</i> dentro da busca. Referência GOV.UK.</div>
+  </div></div>
+
+  <div class="sec">As portas da home</div>
+  <div class="doors">
+    <div class="door primary"><div class="cover" style="background:linear-gradient(135deg,#0e4f5a,#157083)"><div class="kk">Comece aqui</div><div class="tt">Buscar</div></div><div class="dl">Busca gigante + autocomplete</div></div>
+    <div class="door primary"><div class="cover" style="background:linear-gradient(135deg,#8a5a12,#b57a20)"><div class="kk">Do dia a dia</div><div class="tt">Temas</div></div><div class="dl">Transporte, IPVA, saúde…</div></div>
+    <div class="door primary"><div class="cover" style="background:linear-gradient(135deg,#3a3327,#5a4f3a)"><div class="kk">Documento</div><div class="tt">Ler uma norma</div></div><div class="dl">Texto + explicação simples</div></div>
+    <div class="door primary"><div class="cover" style="background:linear-gradient(135deg,#2f6b45,#3f875a)"><div class="kk">Confiança</div><div class="tt">Verificar</div></div><div class="dl">Autenticidade em segundos</div></div>
+  </div>
+
+  <div class="sec">O mapa completo</div>
+  <div class="map" id="mapB">
+    <div class="node"><div class="row"><span class="nm serif">Home</span><span class="ds">— busca gigante + temas do dia a dia</span></div><div class="kids">
+      <div class="node collapsible open"><div class="row head"><span class="tw">▸</span><span class="nm">Buscar → Resultados</span></div><div class="kids"><div class="chips"><span>Espécie (filtro)</span><span>Órgão (filtro)</span><span>Ano</span><span>Vigência</span></div></div></div>
+      <div class="node collapsible open"><div class="row head"><span class="tw">▸</span><span class="nm">Temas do dia a dia</span></div><div class="kids">
+        <div class="chips"><span>Transporte escolar</span><span>IPVA</span><span>Saúde</span><span>Educação</span><span>Meio ambiente</span></div>
+        <div class="leaf"><span class="dot">→</span>Página temática — Norma explicada + normas do tema</div>
+      </div></div>
+      <div class="node collapsible open"><div class="row head"><span class="tw">▸</span><span class="nm">Página da Norma</span><span class="ds">— explicada + oficial</span><span class="flag hub">Hub</span></div><div class="kids">
+        <div class="leaf"><span class="dot">·</span>Norma explicada (linguagem simples)</div>
+        <div class="leaf"><span class="dot">·</span>Texto oficial + timeline + autenticidade</div>
+        <div class="leaf"><span class="dot">·</span>Ajustes de leitura <span class="flag comp" style="margin-left:8px">Componente</span></div>
+      </div></div>
+      <div class="node"><div class="row"><span class="nm">Verificar autenticidade</span></div></div>
+      <div class="node"><div class="row"><span class="nm">Explorar por espécie / órgão</span><span class="ds">— não é porta: vive como filtro na busca</span><span class="flag filter">Filtro</span></div></div>
+      <div class="node"><div class="row"><span class="nm">Sobre / Confiança</span></div></div>
+    </div></div>
+  </div>
+  <div class="foot">Tarefa primeiro: ótimo para SEO/LLM e para o cidadão comum. Exige uma taxonomia de temas sólida (hoje ainda frágil) e é a maior mudança frente ao HML atual.</div>
+</div>
+
+<!-- ================= OPÇÃO C ================= -->
+<div class="stage" id="stC">
+  <span class="rec-pill">Recomendada</span>
+  <div class="thesis"><div>
+    <div class="big">Híbrido — duas portas, um motor</div>
+    <div class="lead">Uma <b>porta do cidadão</b> (busca + temas) e uma <b>porta estrutural</b> (espécie · órgão · ano) que compartilham a <i>mesma</i> superfície de exploração. A Norma é o hub; a confiança é uma camada transversal.</div>
+  </div></div>
+
+  <div class="sec">As duas portas da home</div>
+  <div class="doors">
+    <div class="door primary"><div class="cover" style="background:linear-gradient(135deg,#0e4f5a,#1a6f83)"><div class="kk">Porta 1 · Cidadão</div><div class="tt">Buscar &amp; Temas</div></div><div class="dl">Busca + assuntos do dia a dia</div></div>
+    <div class="door primary"><div class="cover" style="background:linear-gradient(135deg,#5b4a2a,#7a6436)"><div class="kk">Porta 2 · Estrutural</div><div class="tt">Explorar o acervo</div></div><div class="dl">Espécie · Órgão · Ano</div></div>
+    <div class="door"><div class="cover" style="background:linear-gradient(135deg,#2f6b45,#3f875a)"><div class="kk">Confiança</div><div class="tt">Verificar</div></div><div class="dl">Autenticidade</div></div>
+    <div class="door"><div class="cover" style="background:linear-gradient(135deg,#4a4a4a,#666)"><div class="kk">Sobre</div><div class="tt">Confiança &amp; Tec.</div></div><div class="dl">Credibilidade</div></div>
+  </div>
+
+  <div class="sec">O mapa completo</div>
+  <div class="map" id="mapC">
+    <div class="node"><div class="row"><span class="nm serif">Home</span><span class="ds">— duas portas + destaque de confiança</span></div><div class="kids">
+      <div class="node collapsible open"><div class="row head"><span class="tw">▸</span><span class="nm">Buscar → Resultados</span><span class="flag door">Porta 1</span></div><div class="kids"><div class="chips"><span>Autocomplete</span><span>Facetas: Espécie·Órgão·Tema·Ano·Vigência</span><span>Estado vazio com sugestão</span></div></div></div>
+      <div class="node collapsible open"><div class="row head"><span class="tw">▸</span><span class="nm">Explorar o acervo</span><span class="flag door">Porta 2</span></div><div class="kids"><div class="chips"><span>Por Espécie</span><span>Por Órgão</span><span>Por Tema</span><span>Por Ano</span></div></div></div>
+      <div class="node collapsible open"><div class="row head"><span class="tw">▸</span><span class="nm">Página da Norma</span><span class="ds">— o hub</span><span class="flag hub">Hub</span></div><div class="kids">
+        <div class="leaf"><span class="dot">·</span>Texto + Sumário + Timeline</div>
+        <div class="leaf"><span class="dot">·</span>Relações (grafo)</div>
+        <div class="leaf"><span class="dot">·</span>Autenticidade (selo + QR)</div>
+        <div class="leaf"><span class="dot">·</span>Ajustes de leitura <span class="flag comp" style="margin-left:8px">Componente</span></div>
+      </div></div>
+      <div class="node"><div class="row"><span class="nm">Verificar autenticidade</span></div></div>
+      <div class="node"><div class="row"><span class="nm">Confiança &amp; Tecnologia</span></div></div>
+    </div></div>
+    <div class="transv"><b>Camada transversal:</b> modo de leitura global · selo de verificação onipresente · acessibilidade · rodapé institucional.</div>
+  </div>
+  <div class="foot">Serve cidadão e usuário institucional ao mesmo tempo, elimina a duplicação das duas buscas de hoje e preserva os deep-links — por isso é a recomendação.</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+  const DESC={
+    A:'A: organiza pela estrutura do Estado (Espécie/Órgão no topo) e só conserta a duplicação e a busca. Menor mudança, porém institucional-primeiro. Toque nos nós ▸ para expandir.',
+    B:'B: organiza pela tarefa do cidadão (buscar, temas, ler, verificar); Espécie/Órgão viram filtro. Referência GOV.UK — ideal para quem vem do Google/LLM.',
+    C:'C (recomendada): duas portas — cidadão e estrutural — compartilhando um só motor de exploração; a Norma é o hub e a confiança é camada. Equilíbrio entre a visão e o que o Detran espera.'
+  };
+  $$('.optsel button').forEach(b=>b.onclick=()=>{
+    $$('.optsel button').forEach(x=>x.classList.toggle('on',x===b));
+    $$('.stage').forEach(s=>s.classList.remove('on'));
+    $('#st'+b.dataset.o).classList.add('on');
+    $('#optdesc').textContent=DESC[b.dataset.o];
+  });
+  $('#optdesc').textContent=DESC.A;
+  // expandir/recolher nós
+  $$('.node.collapsible > .row.head').forEach(r=>r.onclick=()=>r.parentElement.classList.toggle('open'));
+})();
+</script>
+</body>
+</html>
