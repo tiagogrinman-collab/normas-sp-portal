@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protótipo · Área 3 — Página da Norma (A/B/C)</title>
+<style>
+  :root{--bg:#fff;--surface:#fff;--ink:#1d2430;--ink-soft:#5a6472;--line:#e4e7ec;--brand:#1d4ed8;--brand-soft:#eff4ff;--chip:#f2f4f7;--green:#0f7b3d;--green-soft:#e6f4ea;--red:#b42318;--red-soft:#fdecea;--amber:#92600a;--amber-soft:#fdf3df}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.6}
+  .proto{background:#0d1b3e;color:#c9d6f2;font-size:12.5px;padding:10px 20px}
+  .proto .row1{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  .proto b{color:#fff}
+  .optsel{display:flex;gap:8px;flex-wrap:wrap}
+  .optsel button{border:1px solid #2e447e;background:#122452;color:#c9d6f2;border-radius:99px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .optsel button.on{background:#fff;color:#0d1b3e;font-weight:700;border-color:#fff}
+  .optsel button .star{color:#ffc94d}
+  .optdesc{font-size:12px;color:#8fa4d4;margin-top:6px;max-width:920px}
+
+  header.site{background:var(--surface);border-bottom:1px solid var(--line)}
+  header.site .in{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-size:19px;font-weight:800}.logo span{color:var(--brand)}
+  .ntabs{max-width:1180px;margin:0 auto;padding:0 24px;display:flex;gap:26px;border-bottom:1px solid var(--line)}
+  .ntabs a{padding:14px 2px;font-size:14px;color:var(--ink-soft);text-decoration:none;border-bottom:2.5px solid transparent}
+  .ntabs a.on{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+
+  .main{max-width:1180px;margin:0 auto;padding:22px 24px 90px;display:grid;grid-template-columns:210px minmax(0,1fr);gap:34px}
+  @media(max-width:900px){.main{grid-template-columns:1fr}}
+  aside .box{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:13px;color:var(--ink-soft)}
+  aside .box h5{font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+  aside .toc a{display:block;padding:4px 0;color:var(--brand);text-decoration:none;font-size:13px}
+  aside .toc a.lv2{padding-left:12px;font-size:12.5px}
+  .verify{display:flex;gap:8px;align-items:center;color:var(--green);font-weight:600;font-size:12.5px;margin-top:10px}
+  .meta dt{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-top:9px}
+  .meta dd{font-size:13px;color:var(--ink)}
+
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .badge{font-size:11.5px;font-weight:700;letter-spacing:.05em;padding:4px 11px;border-radius:99px;background:var(--chip);color:var(--ink-soft)}
+  .badge.vigor{background:var(--green-soft);color:var(--green)}
+
+  .reader{max-width:70ch;margin:8px auto 0;font-size:17px;line-height:1.75;hyphens:auto;-webkit-hyphens:auto}
+  .reader h1.epi{font-size:1.25em;font-weight:800;margin:0 0 .35em}
+  .reader p.ementa{color:var(--ink-soft);font-style:italic;margin:0 0 1.8em;font-size:.93em;line-height:1.6}
+  .reader h2.cap{font-size:.85em;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);text-align:center;margin:2.2em 0 1.2em}
+  .reader p{margin:0 0 1.05em}
+  .reader .art{margin-top:1.5em;position:relative}
+  .reader .art b.lbl{color:var(--brand)}
+  .reader .anchor{opacity:0;margin-left:8px;font-size:.8em;text-decoration:none;color:var(--ink-soft)}
+  .reader .art:hover .anchor{opacity:1}
+
+  .stage{display:none}.stage.on{display:block}
+
+  /* ===== B: camadas de tempo ===== */
+  .verbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--chip);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:20px}
+  .verbar .lbl{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+  .verbar .seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+  .verbar .seg button{border:0;background:none;border-radius:8px;padding:7px 14px;font-size:13px;color:var(--ink-soft);cursor:pointer;font-family:inherit}
+  .verbar .seg button.sel{background:var(--brand);color:#fff;font-weight:700}
+  .verbar select{border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:13px;font-family:inherit;color:var(--ink);background:var(--surface)}
+  .tline{display:flex;align-items:center;gap:0;margin:4px 0 22px;padding:0 8px}
+  .tline .pt{position:relative;flex:1;height:3px;background:var(--line)}
+  .tline .pt::after{content:attr(data-y);position:absolute;top:10px;left:-14px;font-size:11px;color:var(--ink-soft)}
+  .tline .pt i{position:absolute;top:-5px;left:-6px;width:13px;height:13px;border-radius:99px;background:var(--surface);border:2.5px solid var(--ink-soft);cursor:pointer}
+  .tline .pt.on i{border-color:var(--brand);background:var(--brand)}
+  .diff-old{background:var(--red-soft);text-decoration:line-through;color:#8a2018;padding:2px 4px;border-radius:4px;display:block;margin-bottom:6px}
+  .diff-new{background:var(--green-soft);padding:2px 4px;border-radius:4px;display:block}
+  .diff-src{font-size:12.5px;color:var(--ink-soft);margin-top:6px}
+  .diff-src a{color:var(--brand);text-decoration:none;font-weight:600}
+  .rel{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:26px}
+  .rel h5{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+  .rel .r{display:flex;gap:8px;font-size:13.5px;padding:5px 0}
+  .rel .r .k{color:var(--ink-soft);min-width:110px}
+  .rel .r a{color:var(--brand);text-decoration:none;font-weight:600}
+
+  /* ===== C: camada cidadã ===== */
+  .plain{background:var(--brand-soft);border:1px solid #c8d8f8;border-radius:14px;padding:18px 20px;margin-bottom:22px}
+  .plain .hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .plain .hd b{font-size:14.5px}
+  .plain .ia{font-size:10.5px;font-weight:700;letter-spacing:.06em;background:#fff;color:var(--brand);border:1px solid #c8d8f8;border-radius:99px;padding:2px 9px}
+  .plain p{font-size:14.5px;line-height:1.65}
+  .plain .who{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .plain .who span{background:#fff;border:1px solid #c8d8f8;border-radius:99px;padding:4px 12px;font-size:12.5px;font-weight:600;color:var(--brand)}
+  .plain .foot{font-size:11.5px;color:var(--ink-soft);margin-top:10px}
+  .term{border-bottom:1.5px dotted var(--brand);cursor:help;position:relative}
+  .term .tip{display:none;position:absolute;bottom:135%;left:50%;transform:translateX(-50%);width:250px;background:#1d2430;color:#fff;font-size:12.5px;line-height:1.5;padding:10px 13px;border-radius:9px;z-index:30;font-style:normal;font-weight:400;text-align:left}
+  .term:hover .tip{display:block}
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;background:#1d4ed8;color:#fff;text-decoration:none;font:600 13.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;padding:11px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(29,78,216,.35)">← Voltar ao Menu</a>
+
+<div class="proto">
+  <div class="row1"><b>Protótipo · Área 3 — Página da Norma</b><span>· cenário: Lei 9.503/97 (CTB), Art. 2º — dispositivo que foi alterado pela Lei 13.146/2015</span></div>
+  <div class="optsel">
+    <button data-o="A">Opção A — Fundação editorial</button>
+    <button data-o="B" class="on"><span class="star">★</span> Opção B — Camadas de tempo (legislation.gov.uk) · recomendada</button>
+    <button data-o="C">Opção C — Camada cidadã (linguagem simples)</button>
+  </div>
+  <div class="optdesc" id="optdesc"></div>
+</div>
+
+<header class="site"><div class="in"><div class="logo">Normas<span>.SP</span></div><div style="display:flex;gap:6px"><button style="width:36px;height:36px;border-radius:99px;border:1px solid var(--line);background:none;cursor:pointer">⌕</button><button style="height:36px;border-radius:10px;border:1px solid var(--line);background:none;cursor:pointer;padding:0 12px;font-weight:700">Aa</button></div></div></header>
+<nav class="ntabs"><a class="on" href="#">Texto da norma</a><a href="#">Informações</a><a href="#">Timeline de alterações</a><a href="#">Normas relacionadas</a></nav>
+
+<div class="main">
+  <aside>
+    <div class="box toc">
+      <h5>Sumário</h5>
+      <a href="#">Cap. I — Disposições preliminares</a>
+      <a href="#" class="lv2">Artigo 1º</a>
+      <a href="#" class="lv2" style="font-weight:700">Artigo 2º ●</a>
+      <a href="#" class="lv2">Artigo 3º</a>
+      <a href="#">Cap. II — Sistema Nacional de Trânsito</a>
+    </div>
+    <div class="box">
+      <h5>Ficha da norma <span style="letter-spacing:0;text-transform:none;font-weight:400">(sem duplicatas)</span></h5>
+      <dl class="meta">
+        <dt>Situação</dt><dd style="color:var(--green);font-weight:700">● Em vigor</dd>
+        <dt>Publicação</dt><dd>D.O.U. de 24/09/1997</dd>
+        <dt>Órgão</dt><dd>Presidência da República</dd>
+        <dt>Última alteração</dt><dd>Lei 13.146/2015</dd>
+      </dl>
+      <div class="verify">✓ Verificado via blockchain</div>
+    </div>
+  </aside>
+
+  <article>
+    <div class="badges"><span class="badge vigor">● EM VIGOR</span><span class="badge">LEI</span><span class="badge">CÓDIGO DE TRÂNSITO BRASILEIRO</span></div>
+
+    <!-- ===== A ===== -->
+    <div class="stage" id="stA">
+      <div class="reader" lang="pt-BR">
+        <h1 class="epi">Lei nº 9.503, de 23 de setembro de 1997</h1>
+        <p class="ementa">Institui o Código de Trânsito Brasileiro.</p>
+        <h2 class="cap">Capítulo I — Disposições Preliminares</h2>
+        <p class="art"><b class="lbl">Art. 1º</b> — O trânsito de qualquer natureza nas vias terrestres do território nacional, abertas à circulação, rege-se por este Código.<a class="anchor" href="#">#</a></p>
+        <p class="art"><b class="lbl">Art. 2º</b> — São vias terrestres urbanas e rurais as ruas, as avenidas, os logradouros, os caminhos, as passagens, as estradas e as rodovias, que terão seu uso regulamentado pelo órgão ou entidade com circunscrição sobre elas, de acordo com as peculiaridades locais e as circunstâncias especiais.<a class="anchor" href="#">#</a></p>
+        <p class="art"><b class="lbl">Parágrafo único</b> — Para os efeitos deste Código, são consideradas vias terrestres as praias abertas à circulação pública, as vias internas pertencentes aos condomínios constituídos por unidades autônomas e as vias e áreas de estacionamento de estabelecimentos privados de uso coletivo.</p>
+        <p class="art"><b class="lbl">Art. 3º</b> — As disposições deste Código são aplicáveis a qualquer veículo, bem como aos proprietários, condutores dos veículos nacionais ou estrangeiros e às pessoas nele expressamente mencionadas.<a class="anchor" href="#">#</a></p>
+      </div>
+    </div>
+
+    <!-- ===== B ===== -->
+    <div class="stage on" id="stB">
+      <div class="verbar">
+        <span class="lbl">Versão:</span>
+        <div class="seg" id="verSeg">
+          <button data-v="today" class="sel">Como está hoje</button>
+          <button data-v="orig">Original (23/09/1997)</button>
+        </div>
+        <select id="verDate"><option>Ver em uma data…</option><option>01/01/2000</option><option>02/01/2016 — Lei 13.146</option><option>13/04/2021 — Lei 14.071</option></select>
+        <span style="margin-left:auto;font-size:12.5px;color:var(--ink-soft)" id="verMsg">Exibindo o texto vigente, com alterações destacadas</span>
+      </div>
+      <div class="tline">
+        <div class="pt" data-y="1997"><i title="Publicação original" data-v="orig"></i></div>
+        <div class="pt" data-y="2015"><i title="Lei 13.146/2015" data-v="today"></i></div>
+        <div class="pt on" data-y="hoje"><i title="Versão vigente" data-v="today"></i></div>
+      </div>
+
+      <div class="reader" lang="pt-BR">
+        <h1 class="epi">Lei nº 9.503, de 23 de setembro de 1997</h1>
+        <p class="ementa">Institui o Código de Trânsito Brasileiro.</p>
+        <h2 class="cap">Capítulo I — Disposições Preliminares</h2>
+        <p class="art"><b class="lbl">Art. 2º</b> — São vias terrestres urbanas e rurais as ruas, as avenidas, os logradouros, os caminhos, as passagens, as estradas e as rodovias, que terão seu uso regulamentado pelo órgão ou entidade com circunscrição sobre elas, de acordo com as peculiaridades locais e as circunstâncias especiais.</p>
+        <div class="art" id="diffPU">
+          <b class="lbl">Parágrafo único</b> —
+          <span id="puOld" class="diff-old" style="display:none">Para os efeitos deste Código, são consideradas vias terrestres as praias abertas à circulação pública e as vias internas pertencentes aos condomínios constituídos por unidades autônomas.</span>
+          <span id="puNew" class="diff-new">Para os efeitos deste Código, são consideradas vias terrestres as praias abertas à circulação pública, as vias internas pertencentes aos condomínios constituídos por unidades autônomas e as vias e áreas de estacionamento de estabelecimentos privados de uso coletivo.</span>
+          <div class="diff-src" id="puSrc">Redação dada pela <a href="#">Lei nº 13.146, de 6 de julho de 2015</a> · vigente desde 02/01/2016 · <a href="#" id="showDiff">ver o que mudou</a></div>
+        </div>
+      </div>
+
+      <div class="rel">
+        <h5>Normas relacionadas (do grafo — contextual, não mais uma aba vazia)</h5>
+        <div class="r"><span class="k">Alterada por</span><a href="#">Lei 13.146/2015</a> · <a href="#">Lei 14.071/2020</a></div>
+        <div class="r"><span class="k">Regulamentada por</span><a href="#">Res. CONTRAN 789/2020</a></div>
+        <div class="r"><span class="k">Cita</span><a href="#">CF/1988, art. 22</a></div>
+      </div>
+    </div>
+
+    <!-- ===== C ===== -->
+    <div class="stage" id="stC">
+      <div class="plain">
+        <div class="hd"><b>💬 O que esta norma significa</b><span class="ia">RESUMO GERADO POR IA · NÃO OFICIAL</span></div>
+        <p>Esta é a lei que criou o Código de Trânsito Brasileiro — as regras que valem em qualquer rua ou estrada do país. O trecho abaixo define <b>onde</b> as regras valem: além de ruas e rodovias, o código também vale em praias abertas ao público, ruas internas de condomínios e estacionamentos de lugares como shoppings e supermercados.</p>
+        <div class="who"><span>🚗 Condutores</span><span>🚶 Pedestres</span><span>🏢 Condomínios e estabelecimentos</span></div>
+        <div class="foot">Este resumo é um auxílio de leitura e não substitui o texto oficial abaixo. <a href="#" style="color:var(--brand)">Como geramos e revisamos resumos →</a></div>
+      </div>
+      <div class="reader" lang="pt-BR">
+        <h1 class="epi">Lei nº 9.503, de 23 de setembro de 1997</h1>
+        <p class="ementa">Institui o Código de Trânsito Brasileiro.</p>
+        <h2 class="cap">Capítulo I — Disposições Preliminares</h2>
+        <p class="art"><b class="lbl">Art. 2º</b> — São vias terrestres urbanas e rurais as ruas, as avenidas, os <span class="term">logradouros<span class="tip">Logradouro: qualquer espaço público reconhecido pela prefeitura — praças, largos, vielas, calçadões.</span></span>, os caminhos, as passagens, as estradas e as rodovias, que terão seu uso regulamentado pelo órgão ou entidade com <span class="term">circunscrição<span class="tip">Circunscrição: a área sob responsabilidade daquele órgão — por exemplo, a prefeitura cuida das ruas municipais; o DER, das rodovias estaduais.</span></span> sobre elas, de acordo com as peculiaridades locais e as circunstâncias especiais.</p>
+        <p class="art"><b class="lbl">Parágrafo único</b> — Para os efeitos deste Código, são consideradas vias terrestres as praias abertas à circulação pública, as vias internas pertencentes aos condomínios constituídos por <span class="term">unidades autônomas<span class="tip">Unidades autônomas: as casas ou apartamentos independentes dentro de um condomínio.</span></span> e as vias e áreas de estacionamento de estabelecimentos privados de uso coletivo.</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+  const DESC={
+    A:'A: a fundação editorial — coluna de ~70 caracteres, alinhado à esquerda com hifenização correta, hierarquia tipográfica Capítulo/Artigo/§, âncora copiável por artigo (passe o mouse), ficha de metadados sem duplicatas.',
+    B:'B (recomendada): a norma como documento em camadas de tempo — alterne "Como está hoje" × "Original", clique em "ver o que mudou" para o diff inline com a fonte da alteração, e veja o grafo virar painel contextual.',
+    C:'C: a camada cidadã sobre A+B — resumo em linguagem simples rotulado como IA/não-oficial, "quem é afetado" e termos jurídicos com explicação ao passar o mouse (experimente "logradouros" e "circunscrição").'
+  };
+  $$('.optsel button').forEach(b=>b.onclick=()=>{
+    $$('.optsel button').forEach(x=>x.classList.toggle('on',x===b));
+    $$('.stage').forEach(s=>s.classList.remove('on'));
+    $('#st'+b.dataset.o).classList.add('on');
+    $('#optdesc').textContent=DESC[b.dataset.o];
+  });
+  $('#optdesc').textContent=DESC.B;
+
+  // opção B: versões
+  const OLD='Para os efeitos deste Código, são consideradas vias terrestres as praias abertas à circulação pública e as vias internas pertencentes aos condomínios constituídos por unidades autônomas.';
+  function setVer(v){
+    $$('#verSeg button').forEach(b=>b.classList.toggle('sel',b.dataset.v===v));
+    if(v==='orig'){
+      $('#puNew').style.display='none';
+      $('#puOld').style.display='block';$('#puOld').classList.remove('diff-old');$('#puOld').style.textDecoration='none';$('#puOld').style.background='none';$('#puOld').style.color='inherit';
+      $('#puSrc').innerHTML='Texto original de 23/09/1997 — <a href="#">alterado em 2015</a>';
+      $('#verMsg').textContent='Exibindo a norma como foi publicada em 1997';
+    }else{
+      $('#puOld').style.display='none';
+      $('#puNew').style.display='block';
+      $('#puSrc').innerHTML='Redação dada pela <a href="#">Lei nº 13.146, de 6 de julho de 2015</a> · vigente desde 02/01/2016 · <a href="#" id="showDiff">ver o que mudou</a>';
+      $('#verMsg').textContent='Exibindo o texto vigente, com alterações destacadas';
+      bindDiff();
+    }
+  }
+  function bindDiff(){
+    const l=$('#showDiff');if(!l)return;
+    l.onclick=e=>{e.preventDefault();
+      const o=$('#puOld');o.style.display=o.style.display==='none'?'block':'none';
+      o.classList.add('diff-old');o.style.textDecoration='';o.style.background='';o.style.color='';
+      l.textContent=o.style.display==='none'?'ver o que mudou':'ocultar o que mudou';
+    };
+  }
+  $$('#verSeg button').forEach(b=>b.onclick=()=>setVer(b.dataset.v));
+  $$('.tline .pt i').forEach(i=>i.onclick=()=>{
+    $$('.tline .pt').forEach(p=>p.classList.remove('on'));i.parentElement.classList.add('on');setVer(i.dataset.v);
+  });
+  bindDiff();
+})();
+</script>
+</body>
+</html>

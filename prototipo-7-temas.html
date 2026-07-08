@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protótipo · Área 7 — Páginas temáticas (A/B/C)</title>
+<style>
+  :root{--bg:#f7f8fa;--surface:#fff;--ink:#1d2430;--ink-soft:#5a6472;--line:#e4e7ec;--brand:#1d4ed8;--brand-soft:#eff4ff;--chip:#f2f4f7;--green:#0f7b3d;--green-soft:#e6f4ea;--amber:#92600a;--amber-soft:#fdf3df;--navy:#0d1b3e;--paper:#faf6ee;--serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.55}
+  .proto{background:#0d1b3e;color:#c9d6f2;font-size:12.5px;padding:10px 20px}
+  .proto .row1{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  .proto b{color:#fff}
+  .optsel{display:flex;gap:8px;flex-wrap:wrap}
+  .optsel button{border:1px solid #2e447e;background:#122452;color:#c9d6f2;border-radius:99px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .optsel button.on{background:#fff;color:#0d1b3e;font-weight:700;border-color:#fff}
+  .optsel button .star{color:#ffc94d}
+  .optdesc{font-size:12px;color:#8fa4d4;margin-top:6px;max-width:960px}
+  header.site{background:var(--surface);border-bottom:1px solid var(--line)}
+  header.site .in{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-size:19px;font-weight:800}.logo span{color:var(--brand)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 90px}
+  .stage{display:none}.stage.on{display:block}
+  .crumb{font-size:13px;color:var(--ink-soft);padding:18px 0 0}
+  .crumb a{color:var(--brand);text-decoration:none}
+
+  /* A — guia GOV.UK */
+  .ghead{border-bottom:1px solid var(--line);padding:18px 0 22px;margin-bottom:24px}
+  .kk{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);font-weight:700}
+  .ghead h1{font-size:34px;font-weight:800;margin:8px 0 12px;letter-spacing:-.01em}
+  .ghead p{font-size:17px;color:var(--ink-2,#3c4450);max-width:680px;line-height:1.6}
+  .gcols{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:40px}
+  @media(max-width:840px){.gcols{grid-template-columns:1fr}}
+  h3.sec{font-size:19px;font-weight:700;margin:26px 0 12px}
+  .plain{background:var(--green-soft);border-left:4px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;font-size:15px;margin-bottom:8px}
+  .plain b{color:var(--green)}
+  .rlist a{display:flex;gap:12px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+  .rlist a:hover .t{text-decoration:underline}
+  .rlist .t{font-weight:600;color:var(--brand)}
+  .rlist .d{font-size:13.5px;color:var(--ink-soft)}
+  .rlist .bdg{font-size:10px;font-weight:700;background:var(--green-soft);color:var(--green);border-radius:99px;padding:2px 8px;white-space:nowrap}
+  .subt{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .subt a{background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:8px 15px;font-size:13.5px;text-decoration:none;color:var(--ink)}
+  .subt a:hover{border-color:var(--brand);color:var(--brand)}
+  .aside{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;height:fit-content}
+  .aside h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:12px}
+  .aside .li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .aside .li:last-child{border-bottom:0}
+  .trust{display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--green);font-weight:600;margin-top:12px}
+
+  /* B — coleção Apple Books */
+  .bookhero{background:var(--paper);border-radius:0 0 20px 20px;margin-bottom:0;padding:40px 0 44px;border-bottom:1px solid #ece3d2}
+  .bookhero .in{max-width:760px;margin:0 auto;padding:0 24px;text-align:center}
+  .bookhero .kk{color:#a6791f}
+  .bookhero h1{font-family:var(--serif);font-size:40px;font-weight:600;color:#2f2718;margin:10px 0 14px;letter-spacing:-.01em}
+  .bookhero p{font-family:var(--serif);font-size:19px;line-height:1.7;color:#5a4f3a;max-width:620px;margin:0 auto}
+  .readwrap{max-width:720px;margin:0 auto;padding:34px 24px 0}
+  .readwrap .chapter{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#a6791f;font-weight:700;margin:28px 0 6px}
+  .readwrap h2{font-family:var(--serif);font-size:24px;font-weight:600;margin-bottom:12px;color:#2f2718}
+  .readwrap p.rp{font-family:var(--serif);font-size:18px;line-height:1.85;color:#3a3327;margin-bottom:16px}
+  .refcard{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid #ece3d2;border-radius:12px;padding:14px 18px;margin:14px 0;text-decoration:none;color:var(--ink)}
+  .refcard:hover{border-color:#c9a24a}
+  .refcard .mini{width:40px;height:54px;border-radius:4px;background:linear-gradient(135deg,#8a5a12,#b57a20);flex:none}
+  .refcard .t{font-weight:700;color:#2f2718;font-size:15px}
+  .refcard .d{font-size:13px;color:#8a7e68}
+
+  /* C — pergunta e resposta */
+  .qhead{padding:26px 0 8px}
+  .qhead h1{font-size:28px;font-weight:800;margin-bottom:6px}
+  .qhead p{color:var(--ink-soft);max-width:640px}
+  .faq{max-width:760px;margin-top:8px}
+  .qi{background:var(--surface);border:1px solid var(--line);border-radius:13px;margin:10px 0;overflow:hidden}
+  .qi .qq{padding:16px 20px;font-weight:600;font-size:15.5px;cursor:pointer;display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .qi .qq .pl{color:var(--brand);font-size:20px;transition:transform .2s}
+  .qi.open .qq .pl{transform:rotate(45deg)}
+  .qi .aa{display:none;padding:0 20px 18px;font-size:15px;line-height:1.7;color:var(--ink)}
+  .qi.open .aa{display:block}
+  .qi .aa .cite{display:inline-flex;align-items:center;gap:5px;background:var(--green-soft);color:var(--green);border-radius:7px;padding:1px 8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .qi .src{margin-top:12px;font-size:13px;color:var(--ink-soft)}
+  .qi .src a{color:var(--brand);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;background:#1d4ed8;color:#fff;text-decoration:none;font:600 13.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;padding:11px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(29,78,216,.35)">← Voltar ao Menu</a>
+
+<div class="proto">
+  <div class="row1"><b>Protótipo · Área 7 — Páginas temáticas</b><span>· exemplo: "Transporte escolar" — a porta de quem chega do Google/LLM</span></div>
+  <div class="optsel">
+    <button data-o="A" class="on"><span class="star">★</span> Opção A — Guia do tema (GOV.UK) · recomendada</button>
+    <button data-o="B">Opção B — Coleção (Apple Books)</button>
+    <button data-o="C">Opção C — Pergunta e resposta</button>
+  </div>
+  <div class="optdesc" id="optdesc"></div>
+</div>
+
+<header class="site"><div class="in"><div class="logo">Normas<span>.SP</span></div><div style="font-size:13px;color:var(--ink-soft)">Temas</div></div></header>
+
+<!-- ============ OPÇÃO A ============ -->
+<div class="stage on" id="stA">
+  <div class="wrap">
+    <div class="crumb"><a href="#">Início</a> › <a href="#">Temas</a> › Transporte escolar</div>
+    <div class="ghead">
+      <div class="kk">Tema</div>
+      <h1>Transporte escolar</h1>
+      <p>Tudo o que a legislação estadual de São Paulo define sobre o transporte de estudantes: regras dos veículos, exigências para motoristas, gratuidade e fiscalização.</p>
+    </div>
+    <div class="gcols">
+      <div>
+        <div class="plain"><b>Em linguagem simples:</b> veículos de transporte escolar precisam de vistoria e registro no DETRAN, condutor com curso específico e habilitação categoria D, e identificação visível (faixa amarela e aviso "Escolar"). Municípios podem ter regras adicionais.</div>
+
+        <h3 class="sec">Normas principais</h3>
+        <div class="rlist">
+          <a><div style="flex:1"><div class="t">Lei nº 9.503, de 23 de setembro de 1997 (CTB)</div><div class="d">Arts. 136 a 139 — requisitos do transporte escolar</div></div><span class="bdg">EM VIGOR</span></a>
+          <a><div style="flex:1"><div class="t">Resolução CONTRAN nº 998/2023</div><div class="d">Uniformiza a vistoria e os equipamentos obrigatórios</div></div><span class="bdg">EM VIGOR</span></a>
+          <a><div style="flex:1"><div class="t">Portaria DETRAN-SP nº 142/2026</div><div class="d">Credenciamento estadual de veículos escolares</div></div><span class="bdg">EM VIGOR</span></a>
+        </div>
+
+        <h3 class="sec">Sub-temas</h3>
+        <div class="subt"><a href="#">Vistoria do veículo</a><a href="#">Habilitação do condutor</a><a href="#">Gratuidade e passe escolar</a><a href="#">Fiscalização e multas</a><a href="#">Acessibilidade</a></div>
+
+        <h3 class="sec">Perguntas frequentes</h3>
+        <div class="plain" style="background:var(--brand-soft);border-color:var(--brand)"><b style="color:var(--brand)">Quem pode dirigir a van escolar?</b><br>Condutor maior de 21 anos, habilitação categoria D, curso de transporte escolar e nada consta criminal — conforme art. 138 do CTB.</div>
+      </div>
+      <aside class="aside">
+        <h4>Resumo do tema</h4>
+        <div class="li"><span>Normas neste tema</span><b>1.204</b></div>
+        <div class="li"><span>Em vigor</span><b>—</b></div>
+        <div class="li"><span>Órgão principal</span><b>DETRAN-SP</b></div>
+        <div class="li"><span>Atualizado</span><b>jul/2026</b></div>
+        <div class="trust">✓ Cada norma verificada contra o Diário Oficial</div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- ============ OPÇÃO B ============ -->
+<div class="stage" id="stB">
+  <div class="bookhero"><div class="in">
+    <div class="kk">Coleção temática</div>
+    <h1>Transporte escolar</h1>
+    <p>Uma leitura guiada pela legislação que protege quem vai à escola todos os dias — do Código de Trânsito às portarias do DETRAN, contada de forma contínua.</p>
+  </div></div>
+  <div class="readwrap">
+    <div class="chapter">Capítulo 1 — o que a lei garante</div>
+    <h2>Um veículo seguro, um condutor preparado</h2>
+    <p class="rp">A legislação de São Paulo trata o transporte de estudantes como um serviço de confiança. Antes de circular, cada veículo passa por vistoria e recebe registro específico; o condutor precisa de habilitação categoria D e de um curso próprio. Não é burocracia por burocracia — é o que garante que a viagem até a escola seja segura.</p>
+    <a class="refcard" href="/prototipo-3-pagina-norma.html"><div class="mini"></div><div><div class="t">Lei nº 9.503/1997 — CTB, arts. 136–139</div><div class="d">Os requisitos essenciais do transporte escolar</div></div></a>
+    <div class="chapter">Capítulo 2 — vistoria e equipamentos</div>
+    <h2>O que é conferido antes de cada ano letivo</h2>
+    <p class="rp">Faixa amarela, aviso "Escolar", cintos em todos os assentos, registrador de velocidade. A Resolução CONTRAN nº 998/2023 uniformizou o que se verifica na vistoria — e o DETRAN-SP detalha o credenciamento estadual.</p>
+    <a class="refcard" href="/prototipo-3-pagina-norma.html"><div class="mini" style="background:linear-gradient(135deg,#1f6b3a,#2e8c50)"></div><div><div class="t">Portaria DETRAN-SP nº 142/2026</div><div class="d">Credenciamento estadual de veículos escolares</div></div></a>
+    <p class="rp" style="color:#8a7e68;font-size:15px">Continue lendo a coleção · 12 normas nesta seleção →</p>
+  </div>
+</div>
+
+<!-- ============ OPÇÃO C ============ -->
+<div class="stage" id="stC">
+  <div class="wrap">
+    <div class="qhead">
+      <h1>Transporte escolar — suas dúvidas</h1>
+      <p>Respostas em linguagem simples, cada uma ancorada na norma oficial. Toque para abrir.</p>
+    </div>
+    <div class="faq" id="faqC"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+  const DESC={
+    A:'A (recomendada): página-guia estilo GOV.UK — resumo em linguagem simples, normas principais, sub-temas e FAQ. É a landing ideal para quem chega do Google e de LLMs (SEO/AEO).',
+    B:'B: o tema como coleção editorial do Apple Books — leitura contínua, serifada e calorosa, com as normas surgindo como referências no fio da narrativa. Ótima para descoberta.',
+    C:'C: pergunta-e-resposta — a dúvida real do cidadão em primeiro lugar, cada resposta citando a norma. Experimente: abra uma pergunta.'
+  };
+  $$('.optsel button').forEach(b=>b.onclick=()=>{
+    $$('.optsel button').forEach(x=>x.classList.toggle('on',x===b));
+    $$('.stage').forEach(s=>s.classList.remove('on'));
+    $('#st'+b.dataset.o).classList.add('on');
+    $('#optdesc').textContent=DESC[b.dataset.o];
+  });
+  $('#optdesc').textContent=DESC.A;
+
+  const FAQ=[
+    ['Quem pode dirigir uma van escolar?','Precisa ter mais de 21 anos, habilitação categoria D, curso específico de transporte escolar e não ter cometido infrações graves no último ano. <span class="cite">CTB, art. 138 · EM VIGOR ✓</span>','Lei nº 9.503/1997 — art. 138'],
+    ['O veículo precisa de vistoria todo ano?','Sim. A vistoria é anual e verifica itens de segurança (cintos, faixa, registrador de velocidade). Sem o certificado, o veículo não pode transportar estudantes. <span class="cite">Res. CONTRAN 998/2023 · EM VIGOR ✓</span>','Resolução CONTRAN nº 998/2023'],
+    ['Tenho direito a transporte escolar gratuito?','A gratuidade para estudantes da rede pública é definida por lei estadual e regulamentos municipais, conforme critérios de distância e renda. <span class="cite">Portaria DETRAN 142/2026 · EM VIGOR ✓</span>','Portaria DETRAN-SP nº 142/2026'],
+    ['Quem fiscaliza e aplica multas?','A fiscalização cabe ao DETRAN-SP e aos órgãos municipais de trânsito; transportar estudante em veículo irregular é infração grave, com multa e retenção. <span class="cite">CTB, art. 231 · EM VIGOR ✓</span>','Lei nº 9.503/1997 — art. 231']
+  ];
+  $('#faqC').innerHTML=FAQ.map(f=>`<div class="qi"><div class="qq">${f[0]}<span class="pl">+</span></div><div class="aa">${f[1]}<div class="src">Fonte oficial: <a href="/prototipo-3-pagina-norma.html">${f[2]} →</a></div></div></div>`).join('');
+  $$('#faqC .qq').forEach(q=>q.onclick=()=>q.parentElement.classList.toggle('open'));
+  $$('#faqC .qi')[0].classList.add('open');
+})();
+</script>
+</body>
+</html>

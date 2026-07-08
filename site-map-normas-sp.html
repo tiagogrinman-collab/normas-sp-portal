@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Normas.SP — Site Map 1-3-1</title>
+<style>
+  :root{
+    --ink:#111418; --ink-2:#3c4450; --ink-3:#6b7280;
+    --paper:#f7f8fa; --card:#ffffff; --line:#e5e8ec;
+    --blue:#1d4ed8; --blue-soft:#eff4ff;
+    --green:#0f7b3d; --green-soft:#e8f5ec;
+    --red:#b42318; --red-soft:#fdecea;
+    --amber:#92600a; --amber-soft:#fdf3df;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55;font-size:15.5px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px 80px}
+  header.hero{background:linear-gradient(180deg,#0d1b3e 0%,#14264f 100%);color:#fff;padding:52px 0 44px}
+  header.hero .wrap{padding-bottom:0}
+  .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9db4e8;font-weight:600}
+  header.hero h1{font-size:34px;line-height:1.15;margin:10px 0 12px;font-weight:800}
+  header.hero p{color:#c9d6f2;max-width:780px}
+  .meta{margin-top:20px;font-size:13px;color:#8fa4d4}
+  nav.tabs{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:50;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+  nav.tabs .wrap{padding:0 28px;display:flex;gap:2px;overflow-x:auto}
+  nav.tabs button{appearance:none;border:0;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--ink-3);padding:16px 14px 13px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+  nav.tabs button.active{color:var(--blue);border-bottom-color:var(--blue)}
+  nav.tabs button:hover{color:var(--ink)}
+  section.panel{display:none;padding-top:36px}
+  section.panel.active{display:block}
+  h2{font-size:24px;font-weight:800;margin:8px 0 6px}
+  h3{font-size:17px;font-weight:700;margin:28px 0 10px}
+  .lede{color:var(--ink-2);max-width:840px;margin-bottom:8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:14px 0}
+  .grid{display:grid;gap:14px}
+  .grid.c2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+  .grid.c3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-bottom:10px}
+  .tag.red{background:var(--red-soft);color:var(--red)}
+  .tag.green{background:var(--green-soft);color:var(--green)}
+  .tag.blue{background:var(--blue-soft);color:var(--blue)}
+  .tag.amber{background:var(--amber-soft);color:var(--amber)}
+  ul.tight{margin:6px 0 0 18px}
+  ul.tight li{margin:6px 0}
+  .ev{border-left:3px solid var(--red);background:var(--red-soft);border-radius:0 8px 8px 0;padding:12px 16px;margin:10px 0;font-size:14px}
+  .ev b{color:var(--red)}
+  .bm{border-left:3px solid var(--blue);background:var(--blue-soft);border-radius:0 8px 8px 0;padding:12px 16px;margin:10px 0;font-size:14px}
+  .opt{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .opt h4{font-size:15.5px;margin:4px 0 8px}
+  .opt .letter{width:30px;height:30px;border-radius:8px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;margin-bottom:10px}
+  .opt.rec{border:2px solid var(--green);box-shadow:0 4px 18px rgba(15,123,61,.08)}
+  .opt.rec .letter{background:var(--green)}
+  .opt .pros,.opt .cons{font-size:13.5px;margin-top:10px}
+  .opt .pros b{color:var(--green)} .opt .cons b{color:var(--red)}
+  .recbox{background:var(--green-soft);border:1px solid #bfe3cc;border-radius:var(--radius);padding:20px 22px;margin:16px 0}
+  .recbox h4{color:var(--green);font-size:15px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+  th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);padding:8px 10px;border-bottom:2px solid var(--line)}
+  td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+  a{color:var(--blue)}
+  .small{font-size:13px;color:var(--ink-3)}
+  .num{font-weight:800;font-size:26px;color:var(--blue)}
+  .callout{background:var(--amber-soft);border:1px solid #ecd9ab;border-radius:var(--radius);padding:16px 20px;margin:14px 0;font-size:14px}
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3)}
+  /* --- site map tree --- */
+  .tree{margin:14px 0 4px}
+  .tree .lvl{margin-left:16px;border-left:2px solid var(--line);padding-left:18px}
+  .node{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:10px;margin:8px 0}
+  .node .ic{color:var(--blue);font-weight:800;font-size:13px;min-width:14px}
+  .node .nm{font-weight:700}
+  .node .ds{color:var(--ink-3);font-weight:400;font-size:12.5px}
+  .node.root{background:#0d1b3e;border-color:#0d1b3e;color:#fff}
+  .node.root .ds{color:#9db4e8}
+  .node.root .ic{color:#7aa2ff}
+  .badge{margin-left:auto;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px;white-space:nowrap}
+  .badge.done{background:var(--green-soft);color:var(--green)}
+  .badge.comp{background:var(--blue-soft);color:var(--blue)}
+  .badge.new{background:var(--amber-soft);color:var(--amber)}
+  .door{border-left:3px solid var(--blue)}
+  .transv{background:var(--blue-soft);border:1px dashed #b9cdfb;border-radius:10px;padding:12px 16px;margin:12px 0;font-size:13.5px}
+  .transv b{color:var(--blue)}
+  @media print{ nav.tabs{display:none} section.panel{display:block!important;page-break-before:always} }
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;background:#1d4ed8;color:#fff;text-decoration:none;font:600 13.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;padding:11px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(29,78,216,.35)">← Voltar ao Menu</a>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Projeto Normas.SP · Governo do Estado de São Paulo</div>
+    <h1>Site Map — Modelo 1&#8202;-&#8202;3&#8202;-&#8202;1</h1>
+    <p>Um passo atrás antes das telas: definir a <b>arquitetura de informação</b> do portal em <b>1 problema → 3 opções → 1 recomendação</b>, posicionando as quatro áreas já prototipadas dentro de um mapa único e coerente.</p>
+    <div class="meta">Base atual: hml.normas.sp.gov.br · Protótipos: normas-sp-tiago-grinman.vercel.app · Direção: fonte única da verdade + simples para o cidadão</div>
+  </div>
+</header>
+
+<nav class="tabs"><div class="wrap">
+  <button class="active" data-t="p0">Visão Geral</button>
+  <button data-t="p1">1 · O Mapa Atual</button>
+  <button data-t="p2">3 · As Opções</button>
+  <button data-t="p3">1 · Recomendação</button>
+  <button data-t="p4">Encaixe &amp; Próximos</button>
+</div></nav>
+
+<div class="wrap">
+
+<!-- ================= VISÃO GERAL ================= -->
+<section class="panel active" id="p0">
+  <h2>Visão Geral</h2>
+  <p class="lede">Antes de refinar tela a tela, o Aggio pediu para <b>fechar a arquitetura</b>. O site map é o esqueleto que decide onde cada coisa mora — e é o que garante que as quatro telas já feitas se encaixem num todo, em vez de virarem peças soltas. A régua é a mesma da revisão: <b>fonte única da verdade</b> de 200.000+ normas, <b>simples</b> para o cidadão que chega do Google e de LLMs.</p>
+
+  <div class="grid c3" style="margin-top:18px">
+    <div class="card"><div class="num">5</div><b>superfícies hoje</b><div class="small">Home, Busca Avançada, Consultar Legislações, Autenticar Norma e Página da Norma — sem uma hierarquia clara entre elas.</div></div>
+    <div class="card"><div class="num">2</div><b>portas concorrentes</b><div class="small">"Busca Avançada" e "Consultar Legislações" resolvem quase a mesma coisa — o usuário não sabe qual usar.</div></div>
+    <div class="card"><div class="num">4</div><b>áreas já prototipadas</b><div class="small">Ajustes de Leitura, Busca, Página da Norma e Home — que este mapa reposiciona no lugar certo.</div></div>
+  </div>
+
+  <h3>Os 3 princípios que guiam a arquitetura</h3>
+  <div class="grid c3">
+    <div class="card"><span class="tag blue">Princípio 1</span><b>Uma tarefa, uma porta</b><p class="small" style="margin-top:6px">Cada intenção do usuário tem um caminho óbvio. Superfícies que fazem a mesma coisa (as duas buscas) se fundem num único motor de exploração.</p></div>
+    <div class="card"><span class="tag blue">Princípio 2</span><b>Cidadão na frente, estrutura atrás</b><p class="small" style="margin-top:6px">O topo se organiza pela intenção ("quero achar/ler/verificar uma norma"), não pelo organograma do Estado. Espécie e Órgão viram filtro, não destino principal.</p></div>
+    <div class="card"><span class="tag blue">Princípio 3</span><b>Confiança é camada, não seção</b><p class="small" style="margin-top:6px">Blockchain/IA saem do banner de marketing e viram sinais funcionais presentes em toda jornada: selo, QR e status de vigência sempre à vista.</p></div>
+  </div>
+
+  <h3>As superfícies de hoje, em uma frase</h3>
+  <table>
+    <tr><th style="width:230px">Superfície (rota)</th><th>Papel hoje</th><th style="width:120px">Tensão</th></tr>
+    <tr><td><b>Home</b> <span class="small">/home.html</span></td><td>Hero de busca + contadores + explorar (Tipo/Órgão/Tema) + "por que transformador".</td><td><span class="tag amber" style="margin:0">Marketing</span></td></tr>
+    <tr><td><b>Busca Avançada</b> <span class="small">/advanced-search</span></td><td>Resultados, ordenação e filtro de datas.</td><td><span class="tag red" style="margin:0">Duplica</span></td></tr>
+    <tr><td><b>Consultar Legislações</b> <span class="small">/consultar-legislacaos</span></td><td>"Explorar Estrutura": abas Todos/Tipo/Órgãos/Temas.</td><td><span class="tag red" style="margin:0">Duplica</span></td></tr>
+    <tr><td><b>Autenticar Norma</b> <span class="small">/autenticar-norma</span></td><td>Verificação de autenticidade (hash/QR).</td><td><span class="tag amber" style="margin:0">Escondido</span></td></tr>
+    <tr><td><b>Página da Norma</b></td><td>Texto, sumário, timeline e QR de autenticidade.</td><td><span class="tag green" style="margin:0">Hub</span></td></tr>
+  </table>
+
+  <div class="callout"><b>Como ler este documento:</b> a aba <b>Mapa Atual</b> mostra o problema com o mapa de hoje e evidências; <b>As Opções</b> traz 3 arquiteturas possíveis com trade-offs; <b>Recomendação</b> detalha a escolhida (Opção C — híbrido); e <b>Encaixe &amp; Próximos</b> mostra onde as 4 telas feitas se encaixam e o que ainda falta discutir.</div>
+</section>
+
+<!-- ================= 1 · O MAPA ATUAL ================= -->
+<section class="panel" id="p1">
+  <h2>O Mapa Atual do HML</h2>
+  <span class="tag red">1 · O problema</span>
+  <p class="lede"><b>O portal está organizado pela estrutura do Estado e por uma narrativa tecnológica — não pela tarefa de quem chega.</b> A arquitetura funciona para quem já conhece o acervo, mas cria atritos para o cidadão comum e duplica caminhos de exploração.</p>
+
+  <div class="card" style="margin-top:16px">
+    <div class="small" style="margin-bottom:6px">Reprodução do mapa atual (navegado em hml.normas.sp.gov.br):</div>
+    <div class="tree">
+      <div class="node root"><span class="ic">●</span><span class="nm">Home</span><span class="ds">— hero de busca + contadores + "por que transformador"</span></div>
+      <div class="lvl">
+        <div class="node"><span class="ic">▸</span><span class="nm">Busca Avançada</span><span class="ds">resultados, ordenar, filtro de datas</span></div>
+        <div class="node"><span class="ic">▸</span><span class="nm">Consultar Legislações</span><span class="ds">abas: Todos · Tipo · Órgãos · Temas</span></div>
+        <div class="node"><span class="ic">▸</span><span class="nm">Explorar na Home</span><span class="ds">Tipos de Norma · Órgãos · Temas · Produção por Ano</span></div>
+        <div class="node"><span class="ic">▸</span><span class="nm">Autenticar Norma</span><span class="ds">verificação de hash/QR</span></div>
+        <div class="node"><span class="ic">▸</span><span class="nm">Página da Norma</span><span class="ds">texto · sumário · timeline · QR</span></div>
+        <div class="node"><span class="ic">▸</span><span class="nm">"Por que transformador"</span><span class="ds">blockchain · IA · grafo · auditoria (marketing)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Evidências</h3>
+  <div class="ev"><b>Duas portas para a mesma coisa.</b> "Busca Avançada" e "Consultar Legislações" oferecem exploração por Tipo/Órgão/Tema quase idênticas, sem relação clara entre si. O usuário precisa adivinhar qual abrir.</div>
+  <div class="ev"><b>Busca temática — a do cidadão — retorna zero.</b> Registrado na revisão: "meio ambiente", "transporte escolar" não trazem resultado, embora o acervo exista. O caminho por intenção está quebrado.</div>
+  <div class="ev"><b>Institucional na frente.</b> O primeiro nível privilegia Espécie e Órgão (organograma), enquanto a tarefa do cidadão ("achar → ler → confiar") não tem um caminho de destaque.</div>
+  <div class="ev"><b>Confiança como banner.</b> Blockchain/IA ocupam uma seção de marketing na Home ("por que este portal é transformador") em vez de aparecerem como função ao lado de cada norma.</div>
+
+  <h3>Benchmarks de arquitetura</h3>
+  <div class="bm"><b>GOV.UK</b> — topo organizado por <i>tarefa</i> do cidadão, não por ministério. A estrutura de governo existe, mas como navegação secundária.</div>
+  <div class="bm"><b>legislation.gov.uk / EUR-Lex</b> — uma única superfície de busca/browse com facetas (tipo, ano, tema, status), e a página da norma como hub com versões e relações.</div>
+  <div class="bm"><b>LexML Brasil</b> — vocabulário de relações normativas (alterações, revogações, referências) que sustenta um grafo — exatamente o ativo que o portal já tem e pode expor na Página da Norma.</div>
+</section>
+
+<!-- ================= 3 · AS OPÇÕES ================= -->
+<section class="panel" id="p2">
+  <h2>Três arquiteturas possíveis</h2>
+  <p class="lede">A pergunta central: <b>em torno de quê o portal se organiza — da estrutura do Estado ou das tarefas do cidadão?</b> Três respostas, com trade-offs distintos.</p>
+
+  <div class="grid c3" style="margin-top:16px">
+    <div class="opt">
+      <div class="letter">A</div>
+      <h4>Espelho institucional, corrigido</h4>
+      <p class="small">Mantém a estrutura de hoje e só conserta: funde as duas portas numa só e arruma a busca temática. Espécie/Órgão seguem como primeiro nível.</p>
+      <div class="pros"><b>Prós:</b> menor esforço; casa com o CMS atual e com o que o Detran já espera; risco baixo.</div>
+      <div class="cons"><b>Contras:</b> segue "institucional primeiro"; não atende de fato quem vem do Google/LLM.</div>
+    </div>
+    <div class="opt">
+      <div class="letter">B</div>
+      <h4>Cidadão-primeiro, orientada a tarefa</h4>
+      <p class="small">Reorganiza o topo por intenção: Buscar · Temas do dia a dia · Ler uma norma · Verificar. Espécie/Órgão viram filtro dentro da busca.</p>
+      <div class="pros"><b>Prós:</b> mais fiel à visão; ótima para landing de SEO/LLM; padrão GOV.UK.</div>
+      <div class="cons"><b>Contras:</b> mudança grande; depende de uma taxonomia de temas que hoje está quebrada.</div>
+    </div>
+    <div class="opt rec">
+      <div class="letter">C</div>
+      <h4>Híbrido / dupla porta <span class="tag green" style="margin:0">Recomendada</span></h4>
+      <p class="small">Uma porta principal do cidadão (busca + temas) e uma porta estrutural secundária (espécie/órgão/ano) que compartilham <b>um único</b> motor de exploração. A Norma é o hub; confiança é camada transversal.</p>
+      <div class="pros"><b>Prós:</b> serve cidadão e usuário institucional; elimina a duplicação; preserva deep-links.</div>
+      <div class="cons"><b>Contras:</b> exige disciplina para não recriar duas superfícies de "explorar".</div>
+    </div>
+  </div>
+
+  <div class="callout"><b>Por que não a A nem a B isoladas:</b> a A resolve a duplicação mas mantém o cidadão em segundo plano; a B acerta o cidadão mas rompe demais com a expectativa institucional e aposta tudo numa taxonomia de temas ainda frágil. A C entrega o cidadão-primeiro <i>sem</i> abrir mão da navegação estrutural que o governo espera.</div>
+</section>
+
+<!-- ================= 1 · RECOMENDAÇÃO ================= -->
+<section class="panel" id="p3">
+  <h2>Recomendação — Opção C (Híbrido)</h2>
+  <div class="recbox">
+    <h4>Decisão</h4>
+    <b>Duas portas, um motor.</b> O portal abre com um caminho claro para o cidadão (buscar + temas) e um caminho estrutural para quem navega por espécie/órgão/ano — ambos alimentando a mesma superfície de resultados. A Página da Norma concentra leitura, verificação e relações. Isso honra "fonte única + simples para o cidadão" sem descartar a navegação institucional.
+  </div>
+
+  <h3>Site map proposto</h3>
+  <p class="small" style="margin-bottom:4px"><span class="badge done" style="margin:0">Feito</span> = já prototipado &nbsp; · &nbsp; <span class="badge comp" style="margin:0">Componente</span> = vive dentro de outra tela &nbsp; · &nbsp; <span class="badge new" style="margin:0">Novo</span> = a discutir</p>
+  <div class="tree">
+    <div class="node root"><span class="ic">●</span><span class="nm">Home</span><span class="ds">— duas portas + destaque de confiança</span><span class="badge done">Feito · Área 4</span></div>
+    <div class="lvl">
+
+      <div class="node door"><span class="ic">1</span><span class="nm">Buscar → Resultados</span><span class="ds">porta do cidadão</span><span class="badge done">Feito · Área 2</span></div>
+      <div class="lvl">
+        <div class="node"><span class="ic">·</span><span class="nm">Busca simples + autocomplete</span></div>
+        <div class="node"><span class="ic">·</span><span class="nm">Resultados com facetas</span><span class="ds">Espécie · Órgão · Tema · Ano · Vigência</span></div>
+        <div class="node"><span class="ic">·</span><span class="nm">Estado vazio com sugestão</span><span class="ds">nunca "zero sem saída"</span></div>
+      </div>
+
+      <div class="node door"><span class="ic">2</span><span class="nm">Explorar o acervo</span><span class="ds">porta estrutural — consolida "Consultar Legislações"</span></div>
+      <div class="lvl">
+        <div class="node"><span class="ic">·</span><span class="nm">Por Espécie</span><span class="ds">Decreto, Lei, Portaria…</span></div>
+        <div class="node"><span class="ic">·</span><span class="nm">Por Órgão / Secretaria</span></div>
+        <div class="node"><span class="ic">·</span><span class="nm">Por Tema</span></div>
+        <div class="node"><span class="ic">·</span><span class="nm">Por Ano</span><span class="ds">Produção Normativa</span></div>
+      </div>
+
+      <div class="node door"><span class="ic">3</span><span class="nm">Página da Norma</span><span class="ds">o hub</span><span class="badge done">Feito · Área 3</span></div>
+      <div class="lvl">
+        <div class="node"><span class="ic">·</span><span class="nm">Texto + Sumário + Timeline</span></div>
+        <div class="node"><span class="ic">·</span><span class="nm">Relações (grafo)</span><span class="ds">altera, regulamenta, revoga…</span></div>
+        <div class="node"><span class="ic">·</span><span class="nm">Autenticidade</span><span class="ds">selo + QR verificável</span></div>
+        <div class="node"><span class="ic">·</span><span class="nm">Ajustes de Leitura</span><span class="ds">painel dentro da norma</span><span class="badge comp">Componente · Área 1</span></div>
+      </div>
+
+      <div class="node door"><span class="ic">4</span><span class="nm">Verificar autenticidade</span><span class="ds">eleva "Autenticar Norma" a jornada de confiança</span></div>
+      <div class="node door"><span class="ic">5</span><span class="nm">Confiança &amp; Tecnologia ("Sobre")</span><span class="ds">reposiciona o conteúdo blockchain/IA como credibilidade</span></div>
+
+    </div>
+  </div>
+
+  <div class="transv"><b>Camada transversal (em toda a jornada):</b> modo de leitura global (claro/escuro/tamanho) · selo de verificação onipresente · atalhos de acessibilidade · rodapé institucional (Governo SP, contato, redes).</div>
+</section>
+
+<!-- ================= ENCAIXE & PRÓXIMOS ================= -->
+<section class="panel" id="p4">
+  <h2>Encaixe do que já fizemos + o que falta</h2>
+  <p class="lede">As quatro telas prototipadas não mudam de escopo — elas <b>ganham um lugar definido</b> no mapa. Abaixo, onde cada uma vive e o que ainda precisa entrar na conversa.</p>
+
+  <h3>Onde as 4 áreas se encaixam</h3>
+  <table>
+    <tr><th style="width:210px">Prototipado</th><th>Lugar no site map</th><th style="width:110px">Status</th></tr>
+    <tr><td><b>Home</b> (Área 4)</td><td>Nó raiz — reorganizada em torno das duas portas + destaque de confiança.</td><td><span class="badge done" style="margin:0">Feito</span></td></tr>
+    <tr><td><b>Busca</b> (Área 2)</td><td>Porta 1 (Buscar → Resultados). Absorve a antiga "Busca Avançada".</td><td><span class="badge done" style="margin:0">Feito</span></td></tr>
+    <tr><td><b>Página da Norma</b> (Área 3)</td><td>Porta 3 — o hub, com texto, relações e autenticidade.</td><td><span class="badge done" style="margin:0">Feito</span></td></tr>
+    <tr><td><b>Ajustes de Leitura</b> (Área 1)</td><td>Componente dentro da Página da Norma — não é uma página.</td><td><span class="badge comp" style="margin:0">Componente</span></td></tr>
+  </table>
+
+  <h3>"Outros" — candidatos a discutir com o Aggio</h3>
+  <div class="grid c2">
+    <div class="card"><span class="tag amber">Novo</span><b>Explorar o acervo (browse unificado)</b><p class="small" style="margin-top:6px">A porta estrutural que consolida "Consultar Legislações" — ainda não prototipada. Prioridade alta: resolve a duplicação.</p></div>
+    <div class="card"><span class="tag amber">Novo</span><b>Verificar autenticidade</b><p class="small" style="margin-top:6px">Transformar "Autenticar Norma" numa jornada de confiança clara (colar/escanear → resultado verificado).</p></div>
+    <div class="card"><span class="tag amber">Novo</span><b>Páginas temáticas do dia a dia</b><p class="small" style="margin-top:6px">Landing por assunto (transporte escolar, IPVA, meio ambiente) — a porta de entrada de quem vem do Google/LLM.</p></div>
+    <div class="card"><span class="tag amber">Novo</span><b>"Norma explicada"</b><p class="small" style="margin-top:6px">Resumo em linguagem simples no topo da norma, separado do texto legal oficial.</p></div>
+    <div class="card"><span class="tag amber">Novo</span><b>Confiança &amp; Tecnologia (Sobre)</b><p class="small" style="margin-top:6px">Realoca o conteúdo blockchain/IA da Home para uma página de credibilidade.</p></div>
+    <div class="card"><span class="tag amber">Novo</span><b>Dados abertos / API &amp; perfil de Órgão</b><p class="small" style="margin-top:6px">Camada institucional/técnica: dados abertos, e página-perfil por Secretaria/Órgão.</p></div>
+  </div>
+
+  <div class="callout"><b>Próximo passo sugerido:</b> validar a Opção C e o mapa acima com o Aggio; em seguida, revisitar cada tela feita já dentro deste mapa e priorizar os "Novos" — começando por <b>Explorar o acervo</b> (que elimina a duplicação das duas portas).</div>
+
+  <footer>Normas.SP · Site Map 1-3-1 · preparado para revisão com Aggio · julho/2026</footer>
+</section>
+
+</div>
+
+<script>
+  const tabs=document.querySelectorAll('nav.tabs button');
+  const panels=document.querySelectorAll('section.panel');
+  tabs.forEach(b=>b.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.t).classList.add('active');
+    window.scrollTo({top:0});
+  }));
+</script>
+</body>
+</html>

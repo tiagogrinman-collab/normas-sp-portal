@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protótipo · Área 2 — Busca (A/B/C)</title>
+<style>
+  :root{--bg:#f7f8fa;--surface:#fff;--ink:#1d2430;--ink-soft:#5a6472;--line:#e4e7ec;--brand:#1d4ed8;--brand-soft:#eff4ff;--chip:#f2f4f7;--green:#0f7b3d;--green-soft:#e6f4ea;--amber:#92600a;--amber-soft:#fdf3df}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.55}
+  .proto{background:#0d1b3e;color:#c9d6f2;font-size:12.5px;padding:10px 20px}
+  .proto .row1{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  .proto b{color:#fff}
+  .optsel{display:flex;gap:8px;flex-wrap:wrap}
+  .optsel button{border:1px solid #2e447e;background:#122452;color:#c9d6f2;border-radius:99px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .optsel button.on{background:#fff;color:#0d1b3e;font-weight:700;border-color:#fff}
+  .optsel button .star{color:#ffc94d}
+  .optdesc{font-size:12px;color:#8fa4d4;margin-top:6px;max-width:920px}
+
+  header.site{background:var(--surface);border-bottom:1px solid var(--line)}
+  header.site .in{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-size:19px;font-weight:800}.logo span{color:var(--brand)}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 24px 90px}
+  .stage{display:none}.stage.on{display:block}
+
+  /* busca comum */
+  .sbox{position:relative;max-width:760px}
+  .sbox .inp{display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:0 8px 0 16px;height:56px}
+  .sbox .inp:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+  .sbox input{flex:1;border:0;outline:0;font-size:16.5px;background:none;color:var(--ink);font-family:inherit}
+  .sbox .go{background:var(--brand);color:#fff;border:0;border-radius:10px;height:42px;padding:0 20px;font-weight:700;font-size:14.5px;cursor:pointer}
+  .sugg{position:absolute;top:60px;left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px rgba(16,24,40,.12);overflow:hidden;z-index:30;display:none}
+  .sugg.open{display:block}
+  .sugg .it{padding:12px 18px;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:15px}
+  .sugg .it:hover{background:var(--brand-soft)}
+  .sugg .it .ic{color:var(--ink-soft);font-size:13px}
+  .sugg .it b{color:var(--brand)}
+  .sugg .cap{padding:8px 18px;font-size:11.5px;color:var(--ink-soft);border-top:1px solid var(--line)}
+
+  .meta-row{display:flex;justify-content:space-between;align-items:center;margin:22px 0 4px;flex-wrap:wrap;gap:10px}
+  .meta-row .n{font-size:14.5px}.meta-row .n b{font-size:17px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+  .chip{display:inline-flex;align-items:center;gap:7px;background:var(--brand-soft);color:var(--brand);border:1px solid #c8d8f8;border-radius:99px;padding:5px 12px;font-size:13px;font-weight:600}
+  .chip button{border:0;background:none;color:var(--brand);cursor:pointer;font-size:13px;padding:0}
+  .layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:26px;margin-top:14px}
+  @media(max-width:860px){.layout{grid-template-columns:1fr}}
+  .facets{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;height:fit-content}
+  .facets h5{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);margin:16px 0 9px}
+  .facets h5:first-child{margin-top:0}
+  .fitem{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:14px;cursor:pointer}
+  .fitem .cb{width:16px;height:16px;border:1.5px solid #b9c0cc;border-radius:4px;flex:none;display:grid;place-items:center;font-size:11px;color:#fff}
+  .fitem.sel .cb{background:var(--brand);border-color:var(--brand)}
+  .fitem.sel .cb::after{content:"✓"}
+  .fitem .ct{margin-left:auto;color:var(--ink-soft);font-size:12.5px}
+  .res{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px 22px;margin-bottom:14px}
+  .rcard{padding:18px 0;border-bottom:1px solid var(--line)}
+  .rcard:last-child{border-bottom:0}
+  .rcard h3{font-size:16px;color:var(--brand);margin-bottom:4px;font-weight:700;cursor:pointer}
+  .rcard h3:hover{text-decoration:underline}
+  .rcard p{font-size:14px;color:var(--ink-soft);margin-bottom:8px}
+  .rcard p mark{background:#fff3c4;border-radius:3px;padding:0 2px}
+  .bdg{font-size:10.5px;font-weight:700;letter-spacing:.05em;padding:3px 9px;border-radius:99px;background:var(--chip);color:var(--ink-soft);margin-right:6px}
+  .bdg.vigor{background:var(--green-soft);color:var(--green)}
+  .bdg.rev{background:#fdecea;color:#b42318}
+
+  /* opção B: funil */
+  .funnel-top{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;margin-top:20px}
+  .funnel-top .big{font-size:15px;color:var(--ink-soft)}
+  .funnel-top .big b{font-size:26px;color:var(--ink);display:block;margin:2px 0 4px;transition:all .3s}
+  .steps{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}
+  .crumb{display:inline-flex;align-items:center;gap:7px;background:var(--green-soft);color:var(--green);border-radius:99px;padding:5px 12px;font-size:13px;font-weight:600}
+  .crumb button{border:0;background:none;color:var(--green);cursor:pointer}
+  .q{margin-top:18px}
+  .q h4{font-size:15.5px;margin-bottom:10px}
+  .qopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+  .qcard{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:14px 16px;cursor:pointer;font-family:inherit;text-align:left;font-size:14.5px;color:var(--ink)}
+  .qcard:hover{border-color:var(--brand);background:var(--brand-soft)}
+  .qcard .ct{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+  .skip{margin-top:12px;font-size:13.5px}
+  .skip button{border:0;background:none;color:var(--brand);cursor:pointer;font-weight:600;font-size:13.5px}
+
+  /* opção C: conversacional */
+  .ans{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;margin-top:18px}
+  .ans .hd{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--ink-soft);margin-bottom:12px}
+  .ans .hd .ai{background:var(--brand-soft);color:var(--brand);font-weight:700;border-radius:99px;padding:3px 10px;font-size:11px;letter-spacing:.05em}
+  .ans p.body{font-size:16px;line-height:1.7;max-width:70ch}
+  .cite{display:inline-flex;align-items:center;gap:5px;background:var(--green-soft);color:var(--green);border-radius:7px;padding:1px 8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .cite:hover{outline:1.5px solid var(--green)}
+  .srcs{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+  .srcs h5{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+  .scard{display:flex;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:12px;padding:13px 16px;margin-bottom:8px;cursor:pointer}
+  .scard:hover{border-color:var(--brand)}
+  .scard .t{font-size:14.5px;font-weight:700;color:var(--brand)}
+  .scard .d{font-size:13px;color:var(--ink-soft);margin-top:2px}
+  .disc{background:var(--amber-soft);border:1px solid #ecd9ab;color:var(--amber);border-radius:10px;padding:10px 14px;font-size:12.5px;margin-top:14px}
+  .exq{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .exq button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 15px;font-size:13.5px;cursor:pointer;color:var(--ink);font-family:inherit}
+  .exq button:hover{border-color:var(--brand);color:var(--brand)}
+  .below{margin-top:16px;font-size:14px}
+  .below a{color:var(--brand);font-weight:600;text-decoration:none}
+  h1.pg{font-size:24px;font-weight:800;margin-bottom:16px}
+  .empty-tip{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:12px 16px;font-size:13px;color:var(--ink-soft);margin-top:16px}
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;background:#1d4ed8;color:#fff;text-decoration:none;font:600 13.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;padding:11px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(29,78,216,.35)">← Voltar ao Menu</a>
+
+<div class="proto">
+  <div class="row1"><b>Protótipo · Área 2 — Busca</b><span>· cenário: o cidadão busca "meio ambiente" (que hoje retorna zero no HML)</span></div>
+  <div class="optsel">
+    <button data-o="A" class="on"><span class="star">★</span> Opção A — Fundação: autocomplete + facetas honestas · recomendada como pré-requisito</button>
+    <button data-o="B">Opção B — Busca guiada progressiva (apple.com)</button>
+    <button data-o="C">Opção C — Resposta com citações (vLex)</button>
+  </div>
+  <div class="optdesc" id="optdesc"></div>
+</div>
+
+<header class="site"><div class="in"><div class="logo">Normas<span>.SP</span></div><div style="font-size:13px;color:var(--ink-soft)">Busca</div></div></header>
+
+<div class="wrap">
+
+<!-- ============ OPÇÃO A ============ -->
+<div class="stage on" id="stA">
+  <h1 class="pg">Buscar na legislação</h1>
+  <div class="sbox">
+    <div class="inp"><span style="color:var(--ink-soft)">⌕</span><input id="inpA" value="meio amb" autocomplete="off"><button class="go">Pesquisar</button></div>
+    <div class="sugg open" id="suggA">
+      <div class="it" data-q="meio ambiente"><span class="ic">⌕</span><span><b>meio amb</b>iente</span></div>
+      <div class="it" data-q="meio ambiente — licenciamento ambiental"><span class="ic">⌕</span><span><b>meio amb</b>iente — licenciamento ambiental</span></div>
+      <div class="it" data-q="política estadual do meio ambiente"><span class="ic">⌕</span><span>política estadual do <b>meio amb</b>iente</span></div>
+      <div class="it" data-q="crimes ambientais"><span class="ic">⌕</span><span>crimes <b>amb</b>ientais</span></div>
+      <div class="it" data-q="CETESB — companhia ambiental"><span class="ic">🏛</span><span>CETESB — companhia <b>amb</b>iental do Estado</span></div>
+      <div class="cap">Sugestões baseadas nas buscas mais frequentes · máx. 5 (padrão GOV.UK)</div>
+    </div>
+  </div>
+
+  <div id="resultsA" style="display:none">
+    <div class="meta-row">
+      <div class="n"><b id="countA">1.243</b> normas encontradas para "<span id="qA">meio ambiente</span>" · <span style="color:var(--ink-soft)">0,3s</span></div>
+      <div style="font-size:13.5px;color:var(--ink-soft)">Ordenar: <b style="color:var(--brand);cursor:pointer">Relevância ▾</b></div>
+    </div>
+    <div class="chips" id="chipsA"></div>
+    <div class="layout">
+      <div class="facets">
+        <h5>Situação</h5>
+        <div class="fitem" data-f="Em vigor" data-n="861"><span class="cb"></span>Em vigor<span class="ct">861</span></div>
+        <div class="fitem" data-f="Revogada" data-n="382"><span class="cb"></span>Revogada<span class="ct">382</span></div>
+        <h5>Tipo de norma</h5>
+        <div class="fitem" data-f="Lei" data-n="214"><span class="cb"></span>Lei<span class="ct">214</span></div>
+        <div class="fitem" data-f="Decreto" data-n="689"><span class="cb"></span>Decreto<span class="ct">689</span></div>
+        <div class="fitem" data-f="Resolução" data-n="340"><span class="cb"></span>Resolução<span class="ct">340</span></div>
+        <h5>Órgão <span style="letter-spacing:0;text-transform:none;font-weight:400">(normalizado — 1 órgão, 1 entrada)</span></h5>
+        <div class="fitem" data-f="SIMA" data-n="497"><span class="cb"></span>Sec. de Meio Ambiente, Infr. e Logística<span class="ct">497</span></div>
+        <div class="fitem" data-f="CETESB" data-n="309"><span class="cb"></span>CETESB<span class="ct">309</span></div>
+        <div class="fitem" data-f="Governo do Estado" data-n="437"><span class="cb"></span>Governo do Estado<span class="ct">437</span></div>
+        <h5>Período</h5>
+        <div class="fitem" data-f="Últimos 5 anos" data-n="238"><span class="cb"></span>Últimos 5 anos<span class="ct">238</span></div>
+      </div>
+      <div>
+        <div class="res" id="listA"></div>
+        <div class="empty-tip">💡 <b>E se der zero?</b> Nesta opção o estado vazio nunca é beco sem saída: mostra correção ortográfica ("você quis dizer…"), temas populares relacionados e o link "explorar o acervo por tema".</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ OPÇÃO B ============ -->
+<div class="stage" id="stB">
+  <h1 class="pg">Buscar na legislação</h1>
+  <div class="sbox"><div class="inp"><span style="color:var(--ink-soft)">⌕</span><input value="meio ambiente" readonly><button class="go">Pesquisar</button></div></div>
+
+  <div class="funnel-top">
+    <div class="big">Encontramos <b id="countB">1.243 normas</b> sobre "meio ambiente" — vamos afunilar juntos?</div>
+    <div class="steps" id="stepsB"></div>
+    <div class="q" id="qB"></div>
+    <div class="skip" id="skipB"><button id="showAllB">Ver todos os resultados sem refinar →</button></div>
+  </div>
+
+  <div id="resultsB" style="display:none;margin-top:16px">
+    <div class="meta-row"><div class="n"><b id="countB2">37</b> normas — um conjunto que dá para ler ✓</div></div>
+    <div class="res" id="listB"></div>
+  </div>
+</div>
+
+<!-- ============ OPÇÃO C ============ -->
+<div class="stage" id="stC">
+  <h1 class="pg">Pergunte à legislação de São Paulo</h1>
+  <div class="sbox"><div class="inp"><span style="color:var(--ink-soft)">💬</span><input id="inpC" value="Preciso de licença ambiental para abrir uma oficina mecânica?" readonly><button class="go" id="askC">Perguntar</button></div></div>
+  <div class="exq">
+    <button data-q="oficina">Preciso de licença ambiental para abrir uma oficina?</button>
+    <button data-q="app">O que é área de preservação permanente?</button>
+    <button data-q="multa">Quem aplica multas ambientais no Estado?</button>
+  </div>
+
+  <div class="ans" id="ansC" style="display:none">
+    <div class="hd"><span class="ai">RESPOSTA COM CITAÇÕES</span><span>· cada afirmação está ancorada em uma norma verificável</span></div>
+    <p class="body" id="ansBody"></p>
+    <div class="srcs"><h5>Fontes citadas — texto oficial</h5><div id="srcsC"></div></div>
+    <div class="disc">⚠︎ Resposta auxiliar gerada por IA. Ela <b>só afirma o que consegue citar</b> — o documento oficial é sempre a norma vinculada, verificada contra o Diário Oficial via blockchain.</div>
+    <div class="below">Prefere a busca tradicional? <a href="#">Ver as 1.243 normas sobre licenciamento ambiental →</a></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+  const DESC={
+    A:'A (pré-requisito): full-text que funciona, autocomplete com 5 sugestões (GOV.UK), facetas normalizadas com contagens sincronizadas e chips removíveis. Experimente: clique numa sugestão e depois marque filtros.',
+    B:'B: para termos amplos, o portal pergunta e o universo encolhe visivelmente a cada escolha (padrão apple.com). Experimente: responda as perguntas e veja 1.243 → 214 → 37.',
+    C:'C: pergunta em linguagem natural → resposta sintetizada que só afirma o que cita, com selo de vigência em cada citação (padrão vLex). Experimente: clique em "Perguntar" ou troque a pergunta.'
+  };
+  $$('.optsel button').forEach(b=>b.onclick=()=>{
+    $$('.optsel button').forEach(x=>x.classList.toggle('on',x===b));
+    $$('.stage').forEach(s=>s.classList.remove('on'));
+    $('#st'+b.dataset.o).classList.add('on');
+    $('#optdesc').textContent=DESC[b.dataset.o];
+  });
+  $('#optdesc').textContent=DESC.A;
+
+  const RES=[
+    {t:'Lei nº 17.293, de 15 de outubro de 2020',d:'Estabelece medidas de melhoria do <mark>meio ambiente</mark> de negócios no Estado e dispõe sobre o licenciamento <mark>ambiental</mark> simplificado.',b:['vigor','LEI','SIMA']},
+    {t:'Decreto nº 64.512, de 2 de outubro de 2019',d:'Dispõe sobre o Sistema Estadual de Administração da Qualidade <mark>Ambiental</mark>, proteção, controle e desenvolvimento do <mark>meio ambiente</mark>.',b:['vigor','DECRETO','SIMA']},
+    {t:'Lei nº 13.798, de 9 de novembro de 2009',d:'Institui a Política Estadual de Mudanças Climáticas — PEMC, com objetivos ligados à proteção do <mark>meio ambiente</mark>.',b:['vigor','LEI','Governo do Estado']},
+    {t:'Resolução SMA nº 88, de 19 de dezembro de 2017',d:'Define diretrizes para o licenciamento <mark>ambiental</mark> de empreendimentos de baixo impacto.',b:['rev','RESOLUÇÃO','CETESB']}
+  ];
+  function card(r){return `<div class="rcard"><h3>${r.t}</h3><p>${r.d}</p><div>${r.b.map(x=>x==='vigor'?'<span class="bdg vigor">● EM VIGOR</span>':x==='rev'?'<span class="bdg rev">REVOGADA</span>':'<span class="bdg">'+x+'</span>').join('')}</div></div>`}
+
+  /* ---- A ---- */
+  let filtersA=[];
+  $$('#suggA .it').forEach(it=>it.onclick=()=>{
+    $('#inpA').value=it.dataset.q;$('#suggA').classList.remove('open');
+    $('#qA').textContent=it.dataset.q;$('#resultsA').style.display='';
+    $('#listA').innerHTML=RES.map(card).join('');renderA();
+  });
+  $('#inpA').addEventListener('focus',()=>$('#suggA').classList.add('open'));
+  function renderA(){
+    $('#chipsA').innerHTML=filtersA.map(f=>`<span class="chip">${f.f}<button data-f="${f.f}">✕</button></span>`).join('');
+    $$('#chipsA button').forEach(b=>b.onclick=()=>{toggleF(b.dataset.f)});
+    const base=1243;const n=filtersA.length?Math.min(...filtersA.map(f=>f.n)):base;
+    $('#countA').textContent=n.toLocaleString('pt-BR');
+    $$('#stA .fitem').forEach(el=>el.classList.toggle('sel',filtersA.some(f=>f.f===el.dataset.f)));
+  }
+  function toggleF(name){
+    const el=$$('#stA .fitem').find(x=>x.dataset.f===name);
+    const i=filtersA.findIndex(f=>f.f===name);
+    if(i>=0)filtersA.splice(i,1);else filtersA.push({f:name,n:+el.dataset.n});
+    renderA();
+  }
+  $$('#stA .fitem').forEach(el=>el.onclick=()=>toggleF(el.dataset.f));
+
+  /* ---- B ---- */
+  const FLOW=[
+    {q:'Sobre o que, mais especificamente?',opts:[['Licenciamento ambiental',214],['Unidades de conservação',188],['Recursos hídricos',167],['Fiscalização e multas',120]]},
+    {q:'De qual órgão?',opts:[['CETESB',89],['Sec. de Meio Ambiente (SIMA)',65],['Governo do Estado',60]]},
+    {q:'Qual situação te interessa?',opts:[['Somente em vigor',37],['Incluir revogadas (histórico)',89]]}
+  ];
+  let path=[];
+  function renderB(){
+    $('#stepsB').innerHTML=path.map((p,i)=>`<span class="crumb">${p[0]}<button data-i="${i}">✕</button></span>`).join('');
+    $$('#stepsB button').forEach(b=>b.onclick=()=>{path=path.slice(0,+b.dataset.i);renderB();$('#resultsB').style.display='none'});
+    const n=path.length?path[path.length-1][1]:1243;
+    $('#countB').textContent=n.toLocaleString('pt-BR')+' normas';
+    if(path.length<FLOW.length){
+      const st=FLOW[path.length];
+      $('#qB').innerHTML=`<h4>${st.q}</h4><div class="qopts">${st.opts.map(o=>`<button class="qcard" data-n="${o[1]}" data-t="${o[0]}">${o[0]}<span class="ct">→ ${o[1]} normas</span></button>`).join('')}</div>`;
+      $$('#qB .qcard').forEach(c=>c.onclick=()=>{path.push([c.dataset.t,+c.dataset.n]);renderB()});
+      $('#skipB').style.display='';$('#resultsB').style.display='none';
+    }else{
+      $('#qB').innerHTML='<h4 style="color:var(--green)">✓ Pronto — de 1.243 para '+path[path.length-1][1]+' normas em 3 escolhas.</h4>';
+      $('#skipB').style.display='none';
+      $('#countB2').textContent=path[path.length-1][1];
+      $('#listB').innerHTML=RES.slice(0,3).map(card).join('');
+      $('#resultsB').style.display='';
+    }
+  }
+  $('#showAllB').onclick=()=>{$('#countB2').textContent='1.243';$('#listB').innerHTML=RES.map(card).join('');$('#resultsB').style.display='';};
+  renderB();
+
+  /* ---- C ---- */
+  const ANSWERS={
+    oficina:{q:'Preciso de licença ambiental para abrir uma oficina mecânica?',
+      a:`Depende do porte e do potencial poluidor. Em São Paulo, atividades de baixo impacto podem usar o <b>licenciamento simplificado</b> criado pela <span class="cite">Lei 17.293/2020 · EM VIGOR ✓</span>, enquanto o enquadramento e a emissão da licença cabem à CETESB, conforme o <span class="cite">Decreto 64.512/2019 · EM VIGOR ✓</span>. Oficinas com pintura ou tratamento de superfícies geralmente exigem licença de operação regular.`,
+      s:[['Lei nº 17.293, de 15 de outubro de 2020','Licenciamento ambiental simplificado — art. 30 a 34'],['Decreto nº 64.512, de 2 de outubro de 2019','Competências da CETESB no licenciamento']]},
+    app:{q:'O que é área de preservação permanente?',
+      a:`É a área protegida, coberta ou não por vegetação nativa, com a função de preservar recursos hídricos, paisagem e biodiversidade. No âmbito estadual, a proteção é disciplinada pela <span class="cite">Lei 13.550/2009 · EM VIGOR ✓</span> (uso do solo em áreas de cerrado) e pelas normas gerais recepcionadas pelo <span class="cite">Decreto 64.512/2019 · EM VIGOR ✓</span>.`,
+      s:[['Lei nº 13.550, de 2 de junho de 2009','Utilização e proteção da vegetação nativa de cerrado'],['Decreto nº 64.512, de 2 de outubro de 2019','Sistema estadual de qualidade ambiental']]},
+    multa:{q:'Quem aplica multas ambientais no Estado?',
+      a:`A fiscalização e a aplicação de sanções administrativas ambientais no Estado cabem primariamente à <b>CETESB</b> e à Polícia Militar Ambiental, nos termos do <span class="cite">Decreto 64.512/2019 · EM VIGOR ✓</span> e da <span class="cite">Lei 13.542/2009 · EM VIGOR ✓</span>, que reorganizou a CETESB.`,
+      s:[['Decreto nº 64.512, de 2 de outubro de 2019','Fiscalização e sanções — capítulo IV'],['Lei nº 13.542, de 8 de maio de 2009','Transforma a CETESB em Companhia Ambiental do Estado']]}
+  };
+  function ask(key){
+    const A=ANSWERS[key];$('#inpC').value=A.q;
+    $('#ansBody').innerHTML=A.a;
+    $('#srcsC').innerHTML=A.s.map(s=>`<div class="scard"><div><div class="t">${s[0]}</div><div class="d">${s[1]}</div></div><div style="align-self:center"><span class="bdg vigor">● EM VIGOR</span><span class="bdg" style="background:var(--green-soft);color:var(--green)">✓ blockchain</span></div></div>`).join('');
+    $('#ansC').style.display='';
+  }
+  $('#askC').onclick=()=>ask('oficina');
+  $$('.exq button').forEach(b=>b.onclick=()=>ask(b.dataset.q));
+})();
+</script>
+</body>
+</html>

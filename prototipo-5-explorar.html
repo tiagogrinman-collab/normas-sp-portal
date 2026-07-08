@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protótipo · Área 5 — Explorar o acervo (A/B/C)</title>
+<style>
+  :root{--bg:#f7f8fa;--surface:#fff;--ink:#1d2430;--ink-soft:#5a6472;--line:#e4e7ec;--brand:#1d4ed8;--brand-soft:#eff4ff;--chip:#f2f4f7;--green:#0f7b3d;--green-soft:#e6f4ea;--amber:#92600a;--amber-soft:#fdf3df;--navy:#0d1b3e;--paper:#faf6ee;--serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.55}
+  .proto{background:#0d1b3e;color:#c9d6f2;font-size:12.5px;padding:10px 20px}
+  .proto .row1{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  .proto b{color:#fff}
+  .optsel{display:flex;gap:8px;flex-wrap:wrap}
+  .optsel button{border:1px solid #2e447e;background:#122452;color:#c9d6f2;border-radius:99px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .optsel button.on{background:#fff;color:#0d1b3e;font-weight:700;border-color:#fff}
+  .optsel button .star{color:#ffc94d}
+  .optdesc{font-size:12px;color:#8fa4d4;margin-top:6px;max-width:960px}
+  header.site{background:var(--surface);border-bottom:1px solid var(--line)}
+  header.site .in{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-size:19px;font-weight:800}.logo span{color:var(--brand)}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 24px 90px}
+  .stage{display:none}.stage.on{display:block}
+  h1.pg{font-size:24px;font-weight:800;margin-bottom:4px}
+  .sub{color:var(--ink-soft);margin-bottom:18px;max-width:720px}
+
+  /* A — índice */
+  .idxtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap}
+  .idxtabs button{appearance:none;border:0;background:none;font:inherit;font-size:14.5px;font-weight:600;color:var(--ink-soft);padding:12px 16px;cursor:pointer;border-bottom:3px solid transparent}
+  .idxtabs button.on{color:var(--brand);border-bottom-color:var(--brand)}
+  .idxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+  .idxrow{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:13px 16px;cursor:pointer;text-decoration:none;color:var(--ink)}
+  .idxrow:hover{border-color:var(--brand);background:var(--brand-soft)}
+  .idxrow .ic{width:34px;height:34px;border-radius:8px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:16px;flex:none}
+  .idxrow .nm{font-weight:600;font-size:14.5px}
+  .idxrow .ct{margin-left:auto;color:var(--ink-soft);font-size:13px;font-variant-numeric:tabular-nums}
+  .alpha{display:flex;gap:5px;flex-wrap:wrap;margin:2px 0 20px}
+  .alpha span{width:26px;height:26px;display:grid;place-items:center;border:1px solid var(--line);border-radius:6px;font-size:12.5px;color:var(--ink-soft);cursor:pointer}
+  .alpha span:hover{border-color:var(--brand);color:var(--brand)}
+
+  /* B — estante Apple Books */
+  .shelfwrap{background:var(--paper);border:1px solid #ece3d2;border-radius:16px;padding:26px 24px 30px}
+  .shelfwrap h2{font-family:var(--serif);font-size:22px;font-weight:600;color:#3a3122;margin-bottom:2px}
+  .shelfwrap .shx{color:#8a7e68;font-size:13.5px;margin-bottom:18px}
+  .shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px}
+  .book{cursor:pointer}
+  .cover{height:186px;border-radius:6px 9px 9px 6px;padding:16px 14px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 10px 22px rgba(60,50,30,.22);position:relative;overflow:hidden}
+  .cover::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:rgba(0,0,0,.18)}
+  .cover .kk{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+  .cover .tt{font-family:var(--serif);font-size:18px;line-height:1.2;font-weight:600}
+  .cover .cc{font-size:12px;opacity:.9}
+  .book .lbl{font-size:13.5px;font-weight:600;margin-top:10px}
+  .book .n2{font-size:12.5px;color:#8a7e68}
+
+  /* C — árvore do Estado */
+  .tree2{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 8px;max-width:820px}
+  .tnode{border-radius:9px}
+  .trow{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;border-radius:9px}
+  .trow:hover{background:var(--brand-soft)}
+  .trow .tw{width:16px;color:var(--ink-soft);font-size:12px;transition:transform .15s}
+  .tnode.open>.trow .tw{transform:rotate(90deg)}
+  .trow .nm{font-weight:600}
+  .trow .ct{margin-left:auto;color:var(--ink-soft);font-size:13px;font-variant-numeric:tabular-nums}
+  .tchild{display:none;margin-left:26px;border-left:1px solid var(--line);padding-left:8px}
+  .tnode.open>.tchild{display:block}
+  .tleaf{display:flex;align-items:center;gap:10px;padding:9px 14px;font-size:14px;color:var(--ink-soft)}
+  .tleaf a{color:var(--brand);text-decoration:none;font-weight:600}
+  .tleaf a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;background:#1d4ed8;color:#fff;text-decoration:none;font:600 13.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;padding:11px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(29,78,216,.35)">← Voltar ao Menu</a>
+
+<div class="proto">
+  <div class="row1"><b>Protótipo · Área 5 — Explorar o acervo</b><span>· a porta estrutural que unifica "Busca Avançada" + "Consultar Legislações" numa só</span></div>
+  <div class="optsel">
+    <button data-o="A" class="on"><span class="star">★</span> Opção A — Índice do acervo (legislation.gov.uk) · recomendada</button>
+    <button data-o="B">Opção B — Estante (Apple Books)</button>
+    <button data-o="C">Opção C — Estrutura do Estado (grafo)</button>
+  </div>
+  <div class="optdesc" id="optdesc"></div>
+</div>
+
+<header class="site"><div class="in"><div class="logo">Normas<span>.SP</span></div><div style="font-size:13px;color:var(--ink-soft)">Explorar o acervo</div></div></header>
+
+<div class="wrap">
+
+<!-- ============ OPÇÃO A ============ -->
+<div class="stage on" id="stA">
+  <h1 class="pg">Explorar o acervo</h1>
+  <p class="sub">Um único ponto para navegar as 200 mil normas por <b>espécie</b>, <b>órgão</b>, <b>tema</b> ou <b>ano</b> — cada dimensão com contagem real, sempre sincronizada com a busca.</p>
+  <div class="idxtabs">
+    <button class="on" data-x="esp">Por espécie</button>
+    <button data-x="org">Por órgão</button>
+    <button data-x="tem">Por tema</button>
+    <button data-x="ano">Por ano</button>
+  </div>
+  <div class="alpha" id="alphaA"></div>
+  <div class="idxgrid" id="idxA"></div>
+</div>
+
+<!-- ============ OPÇÃO B ============ -->
+<div class="stage" id="stB">
+  <h1 class="pg">Explorar o acervo</h1>
+  <p class="sub">O acervo como uma <b>estante</b>: coleções curadas por tema, com capa e leitura contínua — o cidadão folheia a legislação como quem escolhe um livro (referência Apple Books).</p>
+  <div class="shelfwrap">
+    <h2>Coleções em destaque</h2>
+    <div class="shx">Agrupamentos temáticos consolidados — toque para folhear as normas da coleção</div>
+    <div class="shelf" id="shelfB"></div>
+  </div>
+</div>
+
+<!-- ============ OPÇÃO C ============ -->
+<div class="stage" id="stC">
+  <h1 class="pg">Explorar por estrutura do Estado</h1>
+  <p class="sub">Navegue o organograma vivo: Governo → Secretarias → Órgãos e Entidades, cada nó conectado às suas normas (referência EUR-Lex / LexML). Toque para expandir.</p>
+  <div class="tree2" id="treeC"></div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+  const DESC={
+    A:'A (recomendada): índice navegável com abas Espécie/Órgão/Tema/Ano e contagens reais — o padrão sóbrio do legislation.gov.uk. Experimente: troque de aba e veja o índice mudar.',
+    B:'B: o acervo como estante de coleções curadas, com capas e tipografia serifada — a entrada calorosa do Apple Books. Bom para descoberta, complementa (não substitui) o índice.',
+    C:'C: a árvore do Estado — Governo → Secretaria → Órgão → normas. Ótimo para quem pensa por instituição. Experimente: expanda uma secretaria.'
+  };
+  $$('.optsel button').forEach(b=>b.onclick=()=>{
+    $$('.optsel button').forEach(x=>x.classList.toggle('on',x===b));
+    $$('.stage').forEach(s=>s.classList.remove('on'));
+    $('#st'+b.dataset.o).classList.add('on');
+    $('#optdesc').textContent=DESC[b.dataset.o];
+  });
+  $('#optdesc').textContent=DESC.A;
+
+  /* ---- A ---- */
+  const DATA={
+    esp:[['Decreto','§',64210],['Lei','⚖',18930],['Portaria','▤',52140],['Resolução','◈',21770],['Lei Complementar','⚖',1340],['Instrução Normativa','▤',9860],['Decreto-Lei','§',2210],['Comunicado','◇',7420]],
+    org:[['Casa Civil','🏛',12840],['Secretaria da Fazenda','🏛',22190],['Sec. Meio Ambiente (SIMA)','🌿',9970],['CETESB','🌿',6180],['DETRAN-SP','🚗',4130],['Secretaria da Educação','🎓',15220],['Secretaria da Saúde','＋',13980],['Sec. Segurança Pública','🛡',8110]],
+    tem:[['Trânsito e Transporte','🚗',7340],['Educação','🎓',15220],['Saúde','＋',13980],['Meio Ambiente','🌿',9970],['Tributos e Finanças','₵',22190],['Servidores Públicos','👤',11450],['Segurança','🛡',8110],['Habitação e Urbanismo','🏗',5230]],
+    ano:[['2026','◷',1210],['2025','◷',8940],['2024','◷',9120],['2023','◷',8760],['2022','◷',8330],['2021','◷',7990],['2020','◷',8410],['Antes de 2020','◷',147000]]
+  };
+  const ALPHA='A B C D E F G H I J L M N O P R S T U V'.split(' ');
+  function renderIdx(key){
+    $('#alphaA').style.display=(key==='esp'||key==='ano')?'none':'flex';
+    $('#alphaA').innerHTML=ALPHA.map(a=>`<span>${a}</span>`).join('');
+    $('#idxA').innerHTML=DATA[key].map(r=>`<a class="idxrow"><span class="ic">${r[1]}</span><span class="nm">${r[0]}</span><span class="ct">${r[2].toLocaleString('pt-BR')}</span></a>`).join('');
+  }
+  $$('#stA .idxtabs button').forEach(b=>b.onclick=()=>{
+    $$('#stA .idxtabs button').forEach(x=>x.classList.toggle('on',x===b));
+    renderIdx(b.dataset.x);
+  });
+  renderIdx('esp');
+
+  /* ---- B ---- */
+  const COLL=[
+    ['Trânsito','7.340 normas','Do CTB às portarias do DETRAN',['#0e4f8a','#1d6fb8']],
+    ['Meio Ambiente','9.970 normas','Licenciamento, APP e recursos hídricos',['#1f6b3a','#2e8c50']],
+    ['Educação','15.220 normas','Rede estadual, magistério e merenda',['#8a5a12','#b57a20']],
+    ['Saúde','13.980 normas','Vigilância, SUS estadual e farmácia',['#7a1f2b','#a83346']],
+    ['Tributos','22.190 normas','ICMS, IPVA, ITCMD e parcelamentos',['#3a2c6b','#54408c']],
+    ['Servidores','11.450 normas','Estatuto, carreiras e benefícios',['#334155','#475569']]
+  ];
+  $('#shelfB').innerHTML=COLL.map(c=>`<div class="book">
+     <div class="cover" style="background:linear-gradient(135deg,${c[3][0]},${c[3][1]})">
+       <div class="kk">Coleção</div><div class="tt">${c[0]}</div><div class="cc">${c[2]}</div></div>
+     <div class="lbl">${c[0]}</div><div class="n2">${c[1]}</div></div>`).join('');
+
+  /* ---- C ---- */
+  const ORG=[
+    ['Governo do Estado','⬛',43700,[['Gabinete do Governador','2.140 normas'],['Decretos numerados','41.560 normas']]],
+    ['Secretaria da Fazenda e Planejamento','🏛',22190,[['Coordenadoria da Administração Tributária','14.200 normas'],['Junta de Julgamento (Tributário)','3.980 normas'],['Tesouro do Estado','4.010 normas']]],
+    ['Secretaria de Meio Ambiente (SIMA)','🌿',9970,[['CETESB','6.180 normas'],['Fundação Florestal','1.720 normas'],['Coord. de Recursos Hídricos','2.070 normas']]],
+    ['DETRAN-SP','🚗',4130,[['Diretoria de Habilitação','1.520 normas'],['Diretoria de Veículos','1.410 normas'],['Corregedoria','1.200 normas']]],
+    ['Secretaria da Educação','🎓',15220,[['Coordenadoria de Ensino','9.900 normas'],['Fundação para o Desenv. da Educação','5.320 normas']]]
+  ];
+  $('#treeC').innerHTML=ORG.map(o=>`<div class="tnode"><div class="trow"><span class="tw">▸</span><span class="nm">${o[0]}</span><span class="ct">${o[2].toLocaleString('pt-BR')}</span></div><div class="tchild">${o[3].map(c=>`<div class="tleaf"><span>${o[1]}</span><a>${c[0]}</a><span class="ct" style="margin-left:auto">${c[1]}</span></div>`).join('')}</div></div>`).join('');
+  $$('#treeC .trow').forEach(r=>r.onclick=()=>r.parentElement.classList.toggle('open'));
+  $$('#treeC .tnode')[0].classList.add('open');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Normas.SP — Revisão de Design 1-3-1</title>
+<style>
+  :root{
+    --ink:#111418; --ink-2:#3c4450; --ink-3:#6b7280;
+    --paper:#f7f8fa; --card:#ffffff; --line:#e5e8ec;
+    --blue:#1d4ed8; --blue-soft:#eff4ff;
+    --green:#0f7b3d; --green-soft:#e8f5ec;
+    --red:#b42318; --red-soft:#fdecea;
+    --amber:#92600a; --amber-soft:#fdf3df;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55;font-size:15.5px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px 80px}
+  header.hero{background:linear-gradient(180deg,#0d1b3e 0%,#14264f 100%);color:#fff;padding:52px 0 44px}
+  header.hero .wrap{padding-bottom:0}
+  .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9db4e8;font-weight:600}
+  header.hero h1{font-size:34px;line-height:1.15;margin:10px 0 12px;font-weight:800}
+  header.hero p{color:#c9d6f2;max-width:760px}
+  .meta{margin-top:20px;font-size:13px;color:#8fa4d4}
+  nav.tabs{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:50;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+  nav.tabs .wrap{padding:0 28px;display:flex;gap:2px;overflow-x:auto}
+  nav.tabs button{appearance:none;border:0;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--ink-3);padding:16px 14px 13px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+  nav.tabs button.active{color:var(--blue);border-bottom-color:var(--blue)}
+  nav.tabs button:hover{color:var(--ink)}
+  section.panel{display:none;padding-top:36px}
+  section.panel.active{display:block}
+  h2{font-size:24px;font-weight:800;margin:8px 0 6px}
+  h3{font-size:17px;font-weight:700;margin:28px 0 10px}
+  .lede{color:var(--ink-2);max-width:820px;margin-bottom:8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:14px 0}
+  .grid{display:grid;gap:14px}
+  .grid.c2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+  .grid.c3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-bottom:10px}
+  .tag.red{background:var(--red-soft);color:var(--red)}
+  .tag.green{background:var(--green-soft);color:var(--green)}
+  .tag.blue{background:var(--blue-soft);color:var(--blue)}
+  .tag.amber{background:var(--amber-soft);color:var(--amber)}
+  ul.tight{margin:6px 0 0 18px}
+  ul.tight li{margin:6px 0}
+  .ev{border-left:3px solid var(--red);background:var(--red-soft);border-radius:0 8px 8px 0;padding:12px 16px;margin:10px 0;font-size:14px}
+  .ev b{color:var(--red)}
+  .bm{border-left:3px solid var(--blue);background:var(--blue-soft);border-radius:0 8px 8px 0;padding:12px 16px;margin:10px 0;font-size:14px}
+  .opt{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .opt h4{font-size:15.5px;margin:4px 0 8px}
+  .opt .letter{width:30px;height:30px;border-radius:8px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;margin-bottom:10px}
+  .opt.rec{border:2px solid var(--green);box-shadow:0 4px 18px rgba(15,123,61,.08)}
+  .opt.rec .letter{background:var(--green)}
+  .opt .pros,.opt .cons{font-size:13.5px;margin-top:10px}
+  .opt .pros b{color:var(--green)} .opt .cons b{color:var(--red)}
+  .recbox{background:var(--green-soft);border:1px solid #bfe3cc;border-radius:var(--radius);padding:20px 22px;margin:16px 0}
+  .recbox h4{color:var(--green);font-size:15px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+  th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);padding:8px 10px;border-bottom:2px solid var(--line)}
+  td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+  a{color:var(--blue)}
+  .small{font-size:13px;color:var(--ink-3)}
+  .num{font-weight:800;font-size:26px;color:var(--blue)}
+  .flow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  .flow .step{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13.5px;font-weight:600}
+  .flow .arr{color:var(--ink-3);font-weight:700}
+  /* mock do popup atual */
+  .mock{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;max-width:280px;box-shadow:0 8px 30px rgba(0,0,0,.10);font-size:13px}
+  .mock .t{text-align:center;color:#555;margin-bottom:12px;font-size:14px}
+  .mock .sz{background:#f2f3f5;border-radius:99px;display:flex;justify-content:space-around;align-items:center;padding:10px 0;margin-bottom:12px}
+  .mock .sz span:first-child{font-size:12px}.mock .sz span:last-child{font-size:19px;font-weight:600}
+  .mock .theme{border:1px solid #ddd;border-radius:10px;text-align:center;padding:10px 6px;margin-top:8px}
+  .mock .theme .aa{font-size:19px;font-weight:600}
+  .mock .theme .lbl{font-size:11px;color:#777}
+  .mock .theme.sel{border:2px solid #111}
+  .mock .row{display:flex;gap:8px}
+  .mock .row .theme{flex:1}
+  .mock .theme.sepia{background:#f0e9d8}
+  .mock .theme.dark{background:#2b2b2b;color:#fff}.mock .theme.dark .lbl{color:#bbb}
+  .callout{background:var(--amber-soft);border:1px solid #ecd9ab;border-radius:var(--radius);padding:16px 20px;margin:14px 0;font-size:14px}
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3)}
+  @media print{ nav.tabs{display:none} section.panel{display:block!important;page-break-before:always} }
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;background:#1d4ed8;color:#fff;text-decoration:none;font:600 13.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;padding:11px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(29,78,216,.35)">← Voltar ao Menu</a>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Projeto Normas.SP · Governo do Estado de São Paulo</div>
+    <h1>Revisão de Design — Modelo 1&#8202;-&#8202;3&#8202;-&#8202;1</h1>
+    <p>Diagnóstico do ambiente HML, benchmarking de referências reais e recomendações estruturadas em <b>1 problema → 3 opções → 1 recomendação</b> para as quatro áreas prioritárias: Ajustes de Leitura, Busca, Página da Norma e Home.</p>
+    <div class="meta">Base: hml.normas.sp.gov.br (navegado em 3/jul/2026) · Baseline: detran.sp.gov.br (Lei 9.503/97) · Direção: sobriedade, confiança, simplicidade para o cidadão</div>
+  </div>
+</header>
+
+<nav class="tabs"><div class="wrap">
+  <button class="active" data-t="p0">Visão Geral</button>
+  <button data-t="p1">1 · Ajustes de Leitura ("A")</button>
+  <button data-t="p2">2 · Busca</button>
+  <button data-t="p3">3 · Página da Norma</button>
+  <button data-t="p4">4 · Home</button>
+  <button data-t="p5">Roadmap &amp; Consistência</button>
+</div></nav>
+
+<div class="wrap">
+
+<!-- ================= VISÃO GERAL ================= -->
+<section class="panel active" id="p0">
+  <h2>Visão Geral</h2>
+  <p class="lede">A visão do Aggio é clara: um portal sério o bastante para ser a <b>fonte única da verdade</b> de 200.000+ normas — que não podem ser quebradas, reinterpretadas ou "alucinadas" — e simples o bastante para o cidadão comum, que hoje chega vindo do Google e de LLMs. <b>Menos floreio, mais conteúdo entregue de forma simplificada.</b></p>
+
+  <div class="grid c3" style="margin-top:18px">
+    <div class="card"><div class="num">4</div><b>áreas revisadas</b><div class="small">Ajustes de leitura, Busca, Página da norma e Home — cada uma com 1 problema, 3 opções e 1 recomendação.</div></div>
+    <div class="card"><div class="num">9</div><b>benchmarks reais</b><div class="small">Apple Books, Kindle, Wikipedia, apple.com, GOV.UK, legislation.gov.uk, EUR-Lex, LexML e vLex/Westlaw AI.</div></div>
+    <div class="card"><div class="num">12+</div><b>problemas evidenciados</b><div class="small">Registrados navegando o HML: busca temática retornando zero, temas sem rótulo, contadores zerados, scroll travado etc.</div></div>
+  </div>
+
+  <h3>O fio condutor: os 3 princípios que amarram tudo</h3>
+  <div class="grid c3">
+    <div class="card"><span class="tag blue">Princípio 1</span><b>Confiança visível, não declamada</b><p class="small" style="margin-top:6px">Blockchain e IA saem do discurso de marketing ("por que este portal é transformador") e viram microssinais funcionais: selo de verificação ao lado de cada norma, QR autenticado, status de vigência sempre à vista.</p></div>
+    <div class="card"><span class="tag blue">Princípio 2</span><b>O usuário define como lê</b><p class="small" style="margin-top:6px">Referência Apple Books/Kindle: tema, tamanho, fonte e largura são escolha do leitor — com rótulos claros, feedback imediato e persistência. A norma é um documento para ser <i>lido</i>, não só consultado.</p></div>
+    <div class="card"><span class="tag blue">Princípio 3</span><b>Nunca 10.000 resultados, nunca zero</b><p class="small" style="margin-top:6px">Referência apple.com/GOV.UK: a busca afunila progressivamente (autocomplete → facetas → refinamento guiado) e o estado vazio sempre oferece uma saída. Zero resultado sem sugestão é beco sem saída.</p></div>
+  </div>
+
+  <h3>Estado atual em uma frase, por área</h3>
+  <table>
+    <tr><th style="width:190px">Área</th><th>Diagnóstico-síntese</th><th style="width:110px">Severidade</th></tr>
+    <tr><td><b>Ajustes de Leitura ("A")</b></td><td>O popup "Temas e Ajustes" tem três temas todos rotulados "Original", tamanho de fonte sem feedback e tema sépia que se aplica só a parte da página.</td><td><span class="tag red" style="margin:0">Alta</span></td></tr>
+    <tr><td><b>Busca</b></td><td>Busca por número funciona ("70.525" → 1 resultado); busca temática — a do cidadão — retorna zero ("meio ambiente", "transporte escolar"). Facetas duplicadas e dessincronizadas.</td><td><span class="tag red" style="margin:0">Crítica</span></td></tr>
+    <tr><td><b>Página da Norma</b></td><td>Boa anatomia (sumário, timeline, QR de autenticidade), mas tipografia justificada com quebras erradas, "texto compilado" duplicando assinaturas e metadados redundantes.</td><td><span class="tag amber" style="margin:0">Média</span></td></tr>
+    <tr><td><b>Home</b></td><td>Contadores exibindo "-0 mil normas", scroll seccionado que prende o usuário, e narrativa de marketing tecnológico que conflita com a sobriedade pedida.</td><td><span class="tag amber" style="margin:0">Alta</span></td></tr>
+  </table>
+
+  <div class="callout"><b>Como ler este relatório:</b> cada aba segue o 1-3-1 — primeiro o problema (com evidências coletadas no HML), depois os benchmarks que iluminam o espaço de solução, então 3 opções com trade-offs e 1 recomendação justificada pela visão do projeto. A última aba consolida o roadmap e verifica a consistência entre as recomendações.</div>
+</section>
+
+<!-- ================= ÁREA 1: AJUSTES DE LEITURA ================= -->
+<section class="panel" id="p1">
+  <h2>Área 1 · Ajustes de Leitura — o botão "A"</h2>
+
+  <span class="tag red">1 · O problema</span>
+  <p class="lede"><b>O popup "Temas e Ajustes" não comunica o que faz, não mostra em que estado está e aplica os ajustes de forma inconsistente.</b> Ele existe (a intenção está certa), mas na forma atual mina a percepção de cuidado e qualidade que um portal de fonte única precisa transmitir.</p>
+
+  <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin-top:14px">
+    <div>
+      <div class="small" style="margin-bottom:8px">Reprodução fiel do estado atual (HML):</div>
+      <div class="mock">
+        <div class="t">Temas e Ajustes</div>
+        <div class="sz"><span>A</span><span>A</span></div>
+        <div class="theme sel"><div class="aa">Aa</div><div class="lbl">Original</div></div>
+        <div class="row">
+          <div class="theme sepia"><div class="aa">Aa</div><div class="lbl">Original</div></div>
+          <div class="theme dark"><div class="aa">Aa</div><div class="lbl">Original</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:340px">
+      <div class="ev"><b>Evidência 1.</b> Os três temas (claro, sépia e escuro) têm exatamente o mesmo rótulo: "Original". O usuário não sabe o que cada cartão faz nem qual está ativo além de uma borda sutil.</div>
+      <div class="ev"><b>Evidência 2.</b> Os botões A/A de tamanho não dão feedback: não há indicador de nível, contagem de passos nem botão de "restaurar padrão". Cliquei 2× no A maior e a mudança foi quase imperceptível.</div>
+      <div class="ev"><b>Evidência 3.</b> Ao selecionar o tema sépia, apenas o próprio popup e os cartões laterais mudaram de cor — o texto da norma e o fundo da página permaneceram brancos. O tema escuro, por sua vez, aplica na página inteira. Comportamentos diferentes para o mesmo controle.</div>
+      <div class="ev"><b>Evidência 4.</b> Existe um segundo controle de tema (ícone de lua) no cabeçalho global do site — dois lugares distintos controlam aparência, sem relação visível entre si.</div>
+      <div class="ev"><b>Evidência 5.</b> Não há opções de tipografia (fonte, espaçamento, largura de coluna, alinhamento) — justamente o que resolveria os problemas de leitura da Área 3.</div>
+    </div>
+  </div>
+
+  <h3>Benchmarks</h3>
+  <div class="bm"><b>Apple Books</b> — seis temas <i>nomeados</i> (Original, Quiet, Paper, Bold, Calm, Focus), cada um combinando fundo + fonte + espaçamento. Além do tema, um painel "Customize" com sliders de entrelinha, espaçamento e margens, negrito e liga/desliga de justificado. O tema é um <i>preset com nome</i>, não uma amostra muda. <a href="https://support.apple.com/guide/books/change-a-books-appearance-ibks8923126d/mac" target="_blank">ref</a></div>
+  <div class="bm"><b>Kindle</b> — cores de página nomeadas (branco, sépia, verde, preto), 3 fontes incluindo <b>OpenDyslexic</b> (acessibilidade), temas-preset (Compact, Standard, Large, Low Vision) e <b>temas personalizados salvos pelo usuário</b> — as escolhas persistem entre sessões e dispositivos. <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=TABlJ4ot69emTO8jJG" target="_blank">ref</a></div>
+  <div class="bm"><b>Wikipedia (menu Appearance)</b> — o benchmark de <i>simplicidade</i>: três grupos com rótulos e radio buttons — Text (Small/Standard/Large), Width (Standard/Wide), Color (Automatic/Light/Dark). Estado sempre visível, aplica na página inteira, persiste. É o "mínimo digno" para um site de leitura séria.</div>
+
+  <h3>3 opções</h3>
+  <div class="grid c3">
+    <div class="opt">
+      <div class="letter">A</div>
+      <h4>Correção do componente (padrão Wikipedia)</h4>
+      <p class="small">Manter o popup atual, corrigido: temas renomeados (<b>Claro / Sépia / Escuro</b>) com estado selecionado explícito; tamanho com stepper de níveis visíveis (ex.: 5 passos + "padrão"); tema aplicado à página inteira; controle do cabeçalho (lua) unificado com o popup; persistência via preferência do navegador.</p>
+      <p class="pros"><b>Prós:</b> esforço baixo, resolve 100% do constrangimento atual, entregável em um sprint.</p>
+      <p class="cons"><b>Contras:</b> não avança na visão "usuário define como lê"; sem tipografia nem acessibilidade avançada.</p>
+    </div>
+    <div class="opt rec">
+      <div class="letter">B</div>
+      <h4>Painel de leitura completo (padrão Apple Books/Kindle) — recomendada</h4>
+      <p class="small">Evoluir o popup para um painel de leitura: <b>temas nomeados</b> (Claro, Sépia, Escuro + "Alto contraste"), <b>tamanho</b> com níveis visíveis, <b>fonte</b> (serifada/sem serifa + OpenDyslexic), <b>espaçamento</b> (compacto/padrão/confortável), <b>largura da coluna</b> e <b>alinhamento</b> (esquerda/justificado). Preferências persistem por usuário.</p>
+      <p class="pros"><b>Prós:</b> materializa a referência explícita do Aggio (Apple Books/Kindle); resolve também a tipografia da Área 3; forte ganho de acessibilidade (idosos, baixa visão, dislexia) — coerente com "portal para todos os cidadãos".</p>
+      <p class="cons"><b>Contras:</b> esforço médio; exige definir a tipografia-base primeiro (Área 3, opção A) para os presets fazerem sentido.</p>
+    </div>
+    <div class="opt">
+      <div class="letter">C</div>
+      <h4>Modo Leitura imersivo (a norma como livro)</h4>
+      <p class="small">Ir além do painel: um modo tela-cheia dedicado (evolução do botão de fullscreen que já existe) com progresso de leitura, navegação por artigo/capítulo estilo e-reader, sumário deslizante e os ajustes do painel B integrados. A norma vira um "livro oficial" navegável.</p>
+      <p class="pros"><b>Prós:</b> experiência diferenciadora; excelente para normas longas (CTB, códigos, constituição estadual).</p>
+      <p class="cons"><b>Contras:</b> esforço alto; valor marginal para normas curtas (maioria do acervo); depende de B existir primeiro.</p>
+    </div>
+  </div>
+
+  <div class="recbox">
+    <h4>✓ 1 · Recomendação</h4>
+    <p><b>Opção B, entregue em duas ondas.</b> Onda 1 (imediata) = o conteúdo da opção A: renomear temas, estado visível, aplicar à página inteira, unificar com o toggle global — é correção de bug de UX, não redesign. Onda 2 = fonte, espaçamento, largura e alinhamento, com persistência. A opção C fica como evolução natural do fullscreen quando os códigos longos entrarem no acervo — o painel B já nasce com arquitetura pronta para isso.</p>
+    <p class="small" style="margin-top:8px"><b>Por quê:</b> é a área com melhor razão custo/impacto do projeto inteiro; Apple Books e Kindle são a referência nomeada pelo Aggio; e o painel de leitura é o veículo que corrige a tipografia da página da norma sem briga de opinião — o padrão fica bom e quem quiser muda.</p>
+  </div>
+</section>
+
+<!-- ================= ÁREA 2: BUSCA ================= -->
+<section class="panel" id="p2">
+  <h2>Área 2 · Busca</h2>
+
+  <span class="tag red">1 · O problema</span>
+  <p class="lede"><b>A busca funciona para quem já sabe o número da norma e falha para o cidadão que busca por assunto — exatamente o público-alvo.</b> E quando falha, não oferece saída. O desafio de design que o Aggio colocou ("como não terminar com 10.000 resultados?") tem um irmão gêmeo igualmente grave observado no HML: terminar com zero.</p>
+
+  <div class="ev"><b>Evidência 1 (crítica).</b> Buscar <b>"meio ambiente"</b> → 0 resultados. Buscar <b>"transporte escolar"</b> → 0 resultados. Buscar <b>"70.525"</b> → 1 resultado correto. Num acervo de 17.598 normas, a busca temática — a linguagem do cidadão — retorna vazio; só a busca por identificador funciona.</div>
+  <div class="ev"><b>Evidência 2.</b> O estado vazio diz apenas "Não encontramos o que você estava pesquisando / Tente usar outras palavras-chave" — sem sugestões, sem correção ortográfica, sem temas populares, sem link para explorar o acervo. Beco sem saída.</div>
+  <div class="ev"><b>Evidência 3.</b> Facetas sujas e duplicadas: "Governo do Estado de São Paulo (11838)" e "GOVERNO DO ESTADO DE SÃO PAULO (8666)" convivem como órgãos diferentes; "detran (5081)" e "DEPARTAMENTO ESTADUAL DE TRÂNSITO (3646)" idem. O dado bruto vaza para a interface.</div>
+  <div class="ev"><b>Evidência 4.</b> Com 0 resultados, as contagens das facetas continuam exibindo os totais do acervo inteiro (Decreto 15292…) — filtros e resultados vivem em mundos separados. Ao recarregar a página com o termo na URL, a sidebar de facetas simplesmente desaparece, sobrando só "Data inicial/final".</div>
+  <div class="ev"><b>Evidência 5.</b> O H1 da página é "RESULTADO DE BUSCA" mas o breadcrumb diz "Busca Avançada" — e não há busca avançada real (campos estruturados). Não há autocomplete/sugestões enquanto digita. As facetas de TEMA refletem burocracia interna ("Crédito suplementar", "Despesas Correntes"), não a vida do cidadão.</div>
+
+  <h3>Benchmarks</h3>
+  <div class="bm"><b>apple.com (referência do Aggio)</b> — afunilamento progressivo: você nunca vê "10.000 produtos"; a cada passo o site pergunta algo simples (linha → modelo → configuração) e o universo encolhe. Traduzido para legislação: tema → subtema → espécie/órgão/vigência, com o número de resultados encolhendo visivelmente a cada escolha (princípio de progressive disclosure — <a href="https://developer.apple.com/design/human-interface-guidelines/searching" target="_blank">HIG</a>).</div>
+  <div class="bm"><b>GOV.UK</b> — autocomplete com no máx. <b>5 sugestões</b> a partir de 3 caracteres, treinado com consultas reais anonimizadas dos usuários (Vertex AI); padrão <b>Finder</b>: busca escopada num único dataset com filtros num painel único acima dos resultados. <a href="https://insidegovuk.blog.gov.uk/2024/12/12/making-it-quicker-and-easier-to-search-on-gov-uk/" target="_blank">ref</a></div>
+  <div class="bm"><b>EUR-Lex</b> — o benchmark direto de acervo legal em escala (milhões de documentos): facetas com contagem entre parênteses <i>sempre sincronizada</i>, facetas hierárquicas (ano → mês; diretório temático em árvore), multisseleção, ordenadas por volume. <a href="https://eur-lex.europa.eu/content/help/results-list/refine-search.html?locale=en" target="_blank">ref</a></div>
+  <div class="bm"><b>NN/g (pesquisa de facetas)</b> — navegação facetada bem projetada reduz o tempo de busca em 20–50%; regras de ouro: contagens visíveis, remoção de filtro em um clique (chips), feedback instantâneo, rótulos claros. <a href="https://www.nngroup.com/reports/ecommerce-ux-search-including-faceted-search/" target="_blank">ref</a></div>
+  <div class="bm"><b>vLex / Westlaw AI (estado da arte jurídico)</b> — pergunta em linguagem natural → resposta sintetizada <b>com citações clicáveis para a fonte primária</b>. O padrão "responda citando" é o único formato de IA compatível com a promessa "a norma não pode ser alucinada". <a href="https://vlex.com/" target="_blank">ref</a></div>
+
+  <h3>3 opções</h3>
+  <div class="grid c3">
+    <div class="opt rec">
+      <div class="letter">A</div>
+      <h4>Fundação: busca que funciona + facetas honestas — recomendada como pré-requisito</h4>
+      <p class="small">Full-text real com stemming/sinônimos pt-BR (ementa, texto, palavras-chave); autocomplete estilo GOV.UK (5 sugestões, 3 caracteres, treinado com consultas reais); facetas normalizadas (1 órgão = 1 entrada), contagens sempre sincronizadas, chips removíveis; estado vazio com saída (sugestão ortográfica, temas populares, "explorar acervo").</p>
+      <p class="pros"><b>Prós:</b> corrige a falha crítica; é a base sem a qual B e C não param em pé; padrão maduro e testável.</p>
+      <p class="cons"><b>Contras:</b> sozinha não resolve o problema dos 10.000 resultados para termos amplos ("saúde").</p>
+    </div>
+    <div class="opt">
+      <div class="letter">B</div>
+      <h4>Busca guiada progressiva (padrão apple.com)</h4>
+      <p class="small">Para termos amplos, a página de resultados vira um funil: mostra os resultados <i>e</i> pergunta "refine por…" com os 3 recortes mais discriminantes (tema → órgão → período/vigência), cada um mostrando quanto o universo encolhe. Finders escopados por espécie ("Buscar em Leis", "Buscar em Decretos") como o padrão GOV.UK.</p>
+      <p class="pros"><b>Prós:</b> ataca diretamente o desafio dos 10.000 resultados; didático para o cidadão; a referência que o Aggio pediu.</p>
+      <p class="cons"><b>Contras:</b> depende de metadados temáticos limpos (hoje os temas são orçamentários); mais telas para desenhar e manter.</p>
+    </div>
+    <div class="opt">
+      <div class="letter">C</div>
+      <h4>Resposta conversacional com citações (padrão vLex)</h4>
+      <p class="small">Um modo "pergunte à legislação": linguagem natural ("preciso de licença para transporte escolar?") → resposta curta sintetizada por IA <b>sempre ancorada em citações clicáveis</b> das normas (com selo de vigência e verificação blockchain). A lista de resultados clássica continua logo abaixo.</p>
+      <p class="pros"><b>Prós:</b> encontra o usuário onde ele está (vem de Google/LLMs); vitrine perfeita do diferencial "IA + grafo + blockchain" já construído no backend; nenhum portal estadual tem isso.</p>
+      <p class="cons"><b>Contras:</b> risco reputacional se responder sem base — exige guardrails "só afirmo o que cito"; custo de operação; precisa de A pronta.</p>
+    </div>
+  </div>
+
+  <div class="recbox">
+    <h4>✓ 1 · Recomendação</h4>
+    <p><b>A → B → C, nesta ordem, como camadas do mesmo sistema — não como alternativas.</b> A é inegociável e urgente: hoje a promessa central do portal falha no primeiro contato do cidadão. B entra na sequência usando o grafo LexML para gerar os recortes temáticos do funil. C é o destino estratégico — é onde a visão "as pessoas buscam em LLMs, mas aqui a norma não alucina" vira produto — e só deve ir ao ar com o padrão "resposta = citações verificáveis".</p>
+    <div class="flow" style="margin-top:12px">
+      <div class="step">Digita → autocomplete sugere (A)</div><span class="arr">→</span>
+      <div class="step">Resultados + funil "refine por" (B)</div><span class="arr">→</span>
+      <div class="step">Ou pergunta em linguagem natural → resposta com citações (C)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ÁREA 3: PÁGINA DA NORMA ================= -->
+<section class="panel" id="p3">
+  <h2>Área 3 · Página da Norma — apresentação e hierarquia</h2>
+
+  <span class="tag red">1 · O problema</span>
+  <p class="lede"><b>A anatomia da página é boa — sumário, timeline, grafo, QR de autenticidade —, mas a experiência de leitura em si trai o documento.</b> A tipografia trabalha contra o texto legal, o "texto compilado" apresenta defeitos visíveis e os metadados repetem informação. Para um portal cuja essência é "leia a norma com confiança", a leitura é o coração — e é onde está a fragilidade.</p>
+
+  <div class="ev"><b>Evidência 1.</b> Texto justificado com hifenização quebrada: no Decreto 70.525 aparecem "deliber-ação", "arti-go" e — pior — "instalaç ão" (palavra partida com espaço no meio). Rios de espaço entre palavras nas ementas ("Transfere,&nbsp;&nbsp;&nbsp;da&nbsp;&nbsp;&nbsp;Secretaria&nbsp;&nbsp;&nbsp;de…").</div>
+  <div class="ev"><b>Evidência 2.</b> Ao ligar "Texto compilado", o bloco de assinaturas duplica: "TARCÍSIO DE FREITAS / Nerylson Lima…" aparece duas vezes seguidas (uma normal, outra em negrito).</div>
+  <div class="ev"><b>Evidência 3.</b> O primeiro scroll inteiro é protocolo: brasão grande, "GOVERNO DO ESTADO DE SÃO PAULO", epígrafe — a ementa (o que a norma <i>faz</i>) só aparece abaixo da dobra. Sumário desligado por padrão.</div>
+  <div class="ev"><b>Evidência 4.</b> Aba "Informações": "Fonte" e "Veículo de publicação" trazem o mesmo valor; "Órgão emissor" (CAIXA ALTA) e "Origem" (caixa mista) idem; o identificador URN aparece cru (urn:lex:br;sao.paulo…). Aba "Grafo" vazia mostra só a frase "Esta norma não tem relações registradas."</div>
+  <div class="ev"><b>Evidência 5 (positiva — preservar).</b> Timeline de alterações com versões navegáveis, QR "idêntico ao publicado no Diário Oficial" e status EM VIGOR são diferenciais reais contra o baseline Detran — devem ganhar protagonismo, não ser redesenhados do zero.</div>
+
+  <h3>Benchmarks</h3>
+  <div class="bm"><b>legislation.gov.uk (o benchmark direto)</b> — redesign recente motivado por leitura: texto maior, coluna mais clara. O destaque é o <b>"Timeline of Changes"</b>: navegar a norma em qualquer ponto do tempo, com as mudanças marcadas dispositivo a dispositivo e a data de vigência de cada trecho. É a versão madura do que a timeline do Normas já começou. <a href="https://www.legislation.gov.uk/new-design" target="_blank">ref</a></div>
+  <div class="bm"><b>Detran-SP (baseline zero)</b> — o que ele já faz bem e o Normas deve superar: sumário hierárquico completo (capítulos → seções), texto revogado riscado inline com a nova redação logo abaixo e a fonte da alteração anotada ("[Redação dada pela Lei nº 13.146, de 2015]"). O que falta nele: zero personalização de leitura, layout apertado, sem sinais de autenticidade.</div>
+  <div class="bm"><b>Apple Books / Kindle (tipografia)</b> — largura de coluna limitada (~60–75 caracteres), entrelinha generosa, alinhamento à esquerda por padrão (justificado é <i>opção</i>), hierarquia por peso e tamanho, não por CAIXA ALTA. A régua de qualidade para qualquer texto longo em tela.</div>
+
+  <h3>3 opções</h3>
+  <div class="grid c3">
+    <div class="opt">
+      <div class="letter">A</div>
+      <h4>Fundação editorial (tipografia + correções)</h4>
+      <p class="small">Coluna de leitura de 65–75 caracteres; alinhamento à esquerda por padrão (justificado vira opção no painel da Área 1, com hifenização pt-BR correta); escala tipográfica explícita para Epígrafe/Capítulo/Seção/Artigo/§/Inciso; âncora copiável por artigo (#art2); sumário ligado por padrão em normas com 3+ artigos; correção do bug de duplicação do compilado e deduplicação dos metadados.</p>
+      <p class="pros"><b>Prós:</b> ataca 100% das evidências; base para tudo; esforço concentrado em CSS/estrutura.</p>
+      <p class="cons"><b>Contras:</b> não adiciona capacidades novas — é elevar o piso, não o teto.</p>
+    </div>
+    <div class="opt rec">
+      <div class="letter">B</div>
+      <h4>Documento em camadas de tempo (padrão legislation.gov.uk) — recomendada</h4>
+      <p class="small">Consolidar timeline + texto compilado + marcações num único modelo mental: o leitor escolhe <b>"como está hoje"</b> (padrão), <b>"como foi publicada"</b> ou <b>qualquer ponto no tempo</b>; alterações marcadas dispositivo a dispositivo, com riscado/nova redação e fonte da alteração (padrão que o Detran já ensaia); vigência por trecho. O grafo deixa de ser aba isolada e vira o painel "Normas relacionadas" contextual (altera / é alterada por / regulamenta).</p>
+      <p class="pros"><b>Prós:</b> transforma os diferenciais reais do backend (grafo, versões, blockchain) em experiência visível; é o coração da promessa "consolidada, atualizada e confiável"; supera o baseline Detran no seu próprio jogo.</p>
+      <p class="cons"><b>Contras:</b> exige A pronta e dados de alteração confiáveis; esforço médio-alto de front.</p>
+    </div>
+    <div class="opt">
+      <div class="letter">C</div>
+      <h4>Camada cidadã (linguagem simples assistida)</h4>
+      <p class="small">Sobre A+B, uma camada para quem não é jurista: resumo "o que esta norma significa" em linguagem simples no topo (gerado por IA, claramente rotulado como auxiliar e não-oficial), glossário de termos jurídicos em tooltip, e "quem é afetado / o que muda" nas normas de grande impacto.</p>
+      <p class="pros"><b>Prós:</b> o gesto mais direto de "simplificado para o cidadão comum"; diferencial de comunicação pública.</p>
+      <p class="cons"><b>Contras:</b> risco institucional (resumo ≠ norma) — exige rótulo e governança editorial; custo de curadoria/IA; só faz sentido com a confiança do texto-base já resolvida.</p>
+    </div>
+  </div>
+
+  <div class="recbox">
+    <h4>✓ 1 · Recomendação</h4>
+    <p><b>A imediatamente (é correção, não redesign) e B como a grande aposta da página da norma.</b> A página que permite ler qualquer norma "como está hoje" com cada alteração rastreável até o Diário Oficial — e verificável por blockchain — é o argumento definitivo da fonte única da verdade. C entra depois como camada progressiva, começando pelas 100 normas mais acessadas, com rótulo claro de conteúdo auxiliar.</p>
+    <p class="small" style="margin-top:8px"><b>Nota de consistência:</b> a opção B da Área 1 (painel de leitura) e a A daqui são o mesmo investimento tipográfico visto de dois ângulos — especificar juntas.</p>
+  </div>
+</section>
+
+<!-- ================= ÁREA 4: HOME ================= -->
+<section class="panel" id="p4">
+  <h2>Área 4 · Home</h2>
+
+  <span class="tag red">1 · O problema</span>
+  <p class="lede"><b>A Home atual fala do portal em vez de servir o cidadão — e com defeitos que corroem exatamente a confiança que ela tenta declarar.</b> "Sofisticar" aqui não é adicionar; é remover atrito e deixar dados reais e a busca falarem.</p>
+
+  <div class="ev"><b>Evidência 1.</b> Os contadores do hero exibem "<b>-0 mil</b> NORMAS", "<b>-0</b> SECRETARIAS", "<b>-21</b> ÓRGÃOS E ENTIDADES" — números negativos/zerados na vitrine de um portal que se apresenta como "consolidado, atualizado e confiável".</div>
+  <div class="ev"><b>Evidência 2.</b> Scroll seccionado (scroll-jacking): a página "salta" entre seções e, na seção de tecnologia com carrossel, o scroll do mouse fica preso — durante o teste, três rolagens seguidas não moveram a página. Usuário refém da coreografia.</div>
+  <div class="ev"><b>Evidência 3.</b> Tom de marketing: "POR QUE ESTE PORTAL É TRANSFORMADOR", carrossel de features técnicas (LLM, Hyperledger Besu, WORM, LexML) com jargão de engenharia — o oposto do "menos floreio" e irrelevante para quem veio resolver um problema.</div>
+  <div class="ev"><b>Evidência 4.</b> A seção final "Comece sua pesquisa" oferece "Busca Avançada" (que é a mesma busca) e "Explorar Estrutura"; o rodapé é um bloco preto quase vazio com ícones sociais e "© 2024" (desatualizado). Tipografia display gigante em 3 hero-frases consecutivas na mesma página.</div>
+  <div class="ev"><b>Evidência 5 (positiva — preservar).</b> Bons blocos existem: chips de espécie (Decreto, Lei, Portaria…), tabs Tipos/Órgãos/Temas e o gráfico "Produção normativa por ano" — hoje enterrados sob as seções cerimoniais.</div>
+
+  <h3>Benchmarks</h3>
+  <div class="bm"><b>GOV.UK</b> — a home é uma caixa de busca + top tasks (as tarefas mais realizadas) + categorias. Zero storytelling institucional. Princípios de design do governo britânico: "Do less", "Design with data". A sobriedade <i>é</i> a sofisticação. <a href="https://www.gov.uk/guidance/government-design-principles" target="_blank">ref</a></div>
+  <div class="bm"><b>legislation.gov.uk</b> — home de acervo: busca proeminente com escopo (título/número/ano), acesso direto por tipo de legislação e "novidades no acervo". O usuário está a 1 interação do documento. <a href="https://www.legislation.gov.uk/" target="_blank">ref</a></div>
+  <div class="bm"><b>apple.com (o que aproveitar de verdade)</b> — não o marketing, mas a disciplina: uma ideia por seção, hierarquia impecável, nenhum scroll-jack, microcopy curta. Sofisticação como precisão, não como efeito.</div>
+  <div class="bm"><b>LexML / Planalto</b> — mostram o custo de não evoluir: portais oficiais brasileiros funcionais porém datados. O Normas.SP pode ser o primeiro portal legislativo brasileiro com padrão de design contemporâneo — o baseline nacional é baixo, a oportunidade é grande. <a href="https://www.lexml.gov.br/" target="_blank">ref</a></div>
+
+  <h3>3 opções</h3>
+  <div class="grid c3">
+    <div class="opt rec">
+      <div class="letter">A</div>
+      <h4>Search-first sóbria (padrão GOV.UK) — recomendada</h4>
+      <p class="small">Hero enxuto: título curto, busca grande com autocomplete (Área 2) e <b>top tasks</b> reais logo abaixo (normas mais buscadas, publicadas esta semana, temas mais acessados). Scroll normal, sem seções cerimoniais. Dados reais nos números (ou números fora do hero). Selo de confiança discreto e funcional: "Cada norma é verificável contra o Diário Oficial — saiba como", em linguagem simples, no lugar do carrossel técnico.</p>
+      <p class="pros"><b>Prós:</b> encarna "menos floreio, mais conteúdo"; melhor tempo-até-a-tarefa; elimina todos os defeitos evidenciados.</p>
+      <p class="cons"><b>Contras:</b> menos "wow" cerimonial em apresentações institucionais (mitigável com uma página "Sobre a tecnologia" dedicada).</p>
+    </div>
+    <div class="opt">
+      <div class="letter">B</div>
+      <h4>Acervo vivo (dados como vitrine)</h4>
+      <p class="small">A home como painel do acervo: produção normativa recente (o gráfico por ano promovido a protagonista interativo), "publicadas hoje no D.O.", destaques curados por relevância pública, entradas por tema/órgão. A prova de vitalidade e transparência via dados reais.</p>
+      <p class="pros"><b>Prós:</b> demonstra "atualizado e confiável" em vez de declarar; diferencia de todos os portais nacionais.</p>
+      <p class="cons"><b>Contras:</b> exige pipeline de dados impecável (os contadores zerados mostram o risco); curadoria editorial contínua.</p>
+    </div>
+    <div class="opt">
+      <div class="letter">C</div>
+      <h4>Porta conversacional</h4>
+      <p class="small">Um único campo central híbrido: "O que você quer saber da legislação de SP?" — aceita número, palavra-chave ou pergunta em linguagem natural (aciona a Área 2-C), com atalhos por perfil (cidadão / servidor / profissional do direito).</p>
+      <p class="pros"><b>Prós:</b> alinhamento máximo com "as pessoas hoje buscam conversando"; uma única interação para qualquer intenção.</p>
+      <p class="cons"><b>Contras:</b> refém da maturidade da busca conversacional; expectativa alta — se a resposta decepciona, a home inteira decepciona.</p>
+    </div>
+  </div>
+
+  <div class="recbox">
+    <h4>✓ 1 · Recomendação</h4>
+    <p><b>Opção A como estrutura, absorvendo o melhor de B abaixo da dobra</b> (gráfico interativo + "publicadas hoje" + temas), e evoluindo para C quando a busca conversacional estiver madura — o campo de busca da home A já deve nascer com placeholder e arquitetura prontos para aceitar perguntas. O conteúdo tecnológico (blockchain, IA, grafo) sai da home e vira uma página "Como garantimos a autenticidade", linkada pelo selo de confiança.</p>
+  </div>
+</section>
+
+<!-- ================= ROADMAP ================= -->
+<section class="panel" id="p5">
+  <h2>Roadmap &amp; Verificação de Consistência</h2>
+  <p class="lede">As quatro recomendações formam uma direção única — cada uma reforça as outras. Sequenciamento sugerido em três ondas:</p>
+
+  <h3>Onda 1 — Elevar o piso (correções, 1–2 sprints)</h3>
+  <div class="card">
+    <ul class="tight">
+      <li><b>Busca (bloqueador):</b> full-text temático funcionando + facetas normalizadas e sincronizadas + estado vazio com saída. <i>Nada mais importa enquanto "meio ambiente" retornar zero.</i></li>
+      <li><b>"A" / Temas:</b> renomear (Claro/Sépia/Escuro), estado visível, aplicar à página inteira, unificar com o toggle do cabeçalho, feedback de tamanho.</li>
+      <li><b>Página da norma:</b> tipografia editorial (alinhamento à esquerda, coluna 65–75 caracteres, hifenização), bug do texto compilado duplicado, deduplicação de metadados, sumário ligado por padrão.</li>
+      <li><b>Home:</b> contadores com dados reais (ou remoção), fim do scroll-jack, "© 2026", rodapé com conteúdo institucional mínimo.</li>
+    </ul>
+  </div>
+
+  <h3>Onda 2 — Construir o diferencial (1–2 meses)</h3>
+  <div class="card">
+    <ul class="tight">
+      <li><b>Busca guiada:</b> autocomplete (5 sugestões / 3 caracteres) + funil "refine por" com recortes gerados do grafo + finders por espécie.</li>
+      <li><b>Painel de leitura completo:</b> fonte (incl. OpenDyslexic), espaçamento, largura, alinhamento, persistência — presets nomeados.</li>
+      <li><b>Documento em camadas de tempo:</b> "como está hoje / como foi publicada / em qualquer data", alterações dispositivo a dispositivo com fonte anotada.</li>
+      <li><b>Home search-first</b> com top tasks reais e selo de confiança em linguagem simples; página "Como garantimos a autenticidade".</li>
+    </ul>
+  </div>
+
+  <h3>Onda 3 — A aposta estratégica (contínuo)</h3>
+  <div class="card">
+    <ul class="tight">
+      <li><b>Resposta conversacional com citações</b> (padrão vLex): só afirma o que cita; toda citação carrega vigência + verificação. A home evolui para porta híbrida.</li>
+      <li><b>Camada cidadã:</b> resumos em linguagem simples rotulados, glossário em tooltip — começando pelas normas mais acessadas.</li>
+      <li><b>Modo leitura imersivo</b> para códigos longos (CTB, constituição estadual).</li>
+    </ul>
+  </div>
+
+  <h3>Verificação de consistência entre recomendações</h3>
+  <table>
+    <tr><th>Checagem</th><th>Resultado</th></tr>
+    <tr><td>Área 1-B (painel de leitura) × Área 3-A (tipografia editorial)</td><td>✔ Complementares — o painel altera a partir do padrão definido pela fundação editorial. Especificar juntas para evitar retrabalho.</td></tr>
+    <tr><td>Área 2-C (busca conversacional) × Área 4-C (home conversacional)</td><td>✔ Mesma capacidade, duas superfícies. A home A já nasce com arquitetura pronta para o campo híbrido — sem redesign posterior.</td></tr>
+    <tr><td>Área 3-B (camadas de tempo) × Área 2 (facetas de vigência)</td><td>✔ Mesmo modelo de dados de vigência alimenta filtro "em vigor / revogada" na busca e as camadas de tempo na norma.</td></tr>
+    <tr><td>Selo de confiança (Home) × QR de autenticidade (Norma)</td><td>✔ Mesmo sistema de verificação, mesma linguagem visual e mesmo destino ("Como garantimos a autenticidade").</td></tr>
+    <tr><td>Tom institucional: sobriedade × seções "wow" da home atual</td><td>⚠ Conflito real — resolvido movendo a narrativa tecnológica para página própria. Requer alinhamento com stakeholders de comunicação.</td></tr>
+    <tr><td>Risco transversal</td><td>⚠ Todas as apostas de Onda 2/3 dependem de dados limpos (facetas duplicadas e contadores zerados são sintomas do mesmo problema de pipeline). Recomenda-se uma frente de qualidade de dados paralela ao design.</td></tr>
+  </table>
+
+  <h3>Fontes e referências</h3>
+  <div class="card small">
+    <b>Diagnóstico:</b> navegação direta em hml.normas.sp.gov.br (home, busca avançada, Decreto 70.525 — abas Texto/Informações/Timeline/Grafo, popup Temas e Ajustes) e detran.sp.gov.br (Lei 9.503/1997), em 3/jul/2026.<br><br>
+    <b>Benchmarks:</b>
+    <ul class="tight">
+      <li>Apple Books — temas e personalização: <a href="https://support.apple.com/guide/books/change-a-books-appearance-ibks8923126d/mac" target="_blank">support.apple.com</a> · <a href="https://www.iphonelife.com/content/how-to-customize-themes-apple-books-app-iphone" target="_blank">iphonelife.com</a></li>
+      <li>Kindle — opções de leitura e acessibilidade: <a href="https://www.amazon.com/gp/help/customer/display.html?nodeId=TABlJ4ot69emTO8jJG" target="_blank">amazon.com</a> · <a href="https://ebookfriendly.com/kindle-app-ipad-custom-themes/" target="_blank">ebookfriendly.com</a></li>
+      <li>legislation.gov.uk — novo design e timeline: <a href="https://www.legislation.gov.uk/new-design" target="_blank">legislation.gov.uk/new-design</a> · <a href="https://www.legislation.gov.uk/changes" target="_blank">/changes</a></li>
+      <li>EUR-Lex — refino facetado: <a href="https://eur-lex.europa.eu/content/help/results-list/refine-search.html?locale=en" target="_blank">eur-lex.europa.eu</a></li>
+      <li>GOV.UK — autocomplete e finder: <a href="https://insidegovuk.blog.gov.uk/2024/12/12/making-it-quicker-and-easier-to-search-on-gov-uk/" target="_blank">insidegovuk.blog.gov.uk</a> · <a href="https://design-guide.publishing.service.gov.uk/components/search-autocomplete/" target="_blank">design-guide.publishing.service.gov.uk</a> · <a href="https://www.gov.uk/guidance/government-design-principles" target="_blank">Design Principles</a></li>
+      <li>Apple HIG — Searching &amp; progressive disclosure: <a href="https://developer.apple.com/design/human-interface-guidelines/searching" target="_blank">developer.apple.com</a></li>
+      <li>NN/g — busca facetada: <a href="https://www.nngroup.com/reports/ecommerce-ux-search-including-faceted-search/" target="_blank">nngroup.com</a></li>
+      <li>vLex / Westlaw — IA jurídica com citações: <a href="https://vlex.com/" target="_blank">vlex.com</a> · <a href="https://legal.thomsonreuters.com/en/products/westlaw-edge" target="_blank">thomsonreuters.com</a> · <a href="https://www.lawnext.com/2025/02/in-ai-smackdown-law-librarians-compare-legal-ai-research-platforms-finding-distinct-strengths-and-limitations.html" target="_blank">lawnext.com</a></li>
+      <li>LexML Brasil: <a href="https://www.lexml.gov.br/" target="_blank">lexml.gov.br</a></li>
+    </ul>
+  </div>
+
+  <footer>Normas.SP · Revisão de Design 1-3-1 · preparado para revisão com Aggio · julho/2026</footer>
+</section>
+
+</div>
+
+<script>
+  const tabs=document.querySelectorAll('nav.tabs button');
+  const panels=document.querySelectorAll('section.panel');
+  tabs.forEach(b=>b.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.t).classList.add('active');
+    window.scrollTo({top:0});
+  }));
+</script>
+</body>
+</html>

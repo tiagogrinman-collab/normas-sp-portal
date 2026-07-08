@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protótipo · Área 4 — Home (A/B/C)</title>
+<style>
+  :root{--bg:#f7f8fa;--surface:#fff;--ink:#1d2430;--ink-soft:#5a6472;--line:#e4e7ec;--brand:#1d4ed8;--brand-soft:#eff4ff;--chip:#f2f4f7;--green:#0f7b3d;--green-soft:#e6f4ea;--navy:#0d1b3e}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.55}
+  .proto{background:#0d1b3e;color:#c9d6f2;font-size:12.5px;padding:10px 20px}
+  .proto .row1{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  .proto b{color:#fff}
+  .optsel{display:flex;gap:8px;flex-wrap:wrap}
+  .optsel button{border:1px solid #2e447e;background:#122452;color:#c9d6f2;border-radius:99px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .optsel button.on{background:#fff;color:#0d1b3e;font-weight:700;border-color:#fff}
+  .optsel button .star{color:#ffc94d}
+  .optdesc{font-size:12px;color:#8fa4d4;margin-top:6px;max-width:920px}
+
+  header.site{background:var(--surface);border-bottom:1px solid var(--line)}
+  header.site .in{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-size:19px;font-weight:800}.logo span{color:var(--brand)}
+  .hnav{display:flex;gap:20px;font-size:14px}
+  .hnav a{color:var(--ink-soft);text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px 90px}
+  .stage{display:none}.stage.on{display:block}
+
+  .sbig{position:relative;max-width:720px;margin:0 auto}
+  .sbig .inp{display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:0 8px 0 18px;height:60px;box-shadow:0 6px 24px rgba(16,24,40,.06)}
+  .sbig .inp:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+  .sbig input{flex:1;border:0;outline:0;font-size:17px;background:none;color:var(--ink);font-family:inherit}
+  .sbig .go{background:var(--brand);color:#fff;border:0;border-radius:12px;height:46px;padding:0 22px;font-weight:700;font-size:15px;cursor:pointer}
+
+  .trust{display:flex;justify-content:center;align-items:center;gap:8px;font-size:13.5px;color:var(--green);font-weight:600;margin-top:16px}
+  .trust a{color:var(--green)}
+
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:34px}
+  .panelc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .panelc h4{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:12px}
+  .panelc a.item{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:14.5px}
+  .panelc a.item:last-child{border-bottom:0}
+  .panelc a.item:hover{color:var(--brand)}
+  .panelc a.item .n{color:var(--ink-soft);font-size:12.5px;white-space:nowrap}
+  .panelc .chipsrow{display:flex;gap:8px;flex-wrap:wrap}
+  .panelc .chipsrow a{background:var(--chip);border-radius:99px;padding:6px 14px;font-size:13.5px;color:var(--ink);text-decoration:none}
+  .panelc .chipsrow a:hover{background:var(--brand-soft);color:var(--brand)}
+
+  .hero{text-align:center;padding:52px 0 8px}
+  .hero h1{font-size:34px;font-weight:800;letter-spacing:-.01em;margin-bottom:8px}
+  .hero p{color:var(--ink-soft);max-width:620px;margin:0 auto 26px;font-size:16px}
+  .hero p b{color:var(--ink)}
+
+  /* B: acervo vivo */
+  .live{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:30px}
+  @media(max-width:860px){.live{grid-template-columns:1fr}}
+  .feed .it{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .feed .it:last-child{border-bottom:0}
+  .feed .tm{font-size:12px;color:var(--ink-soft);min-width:44px;padding-top:2px}
+  .feed .tt{font-size:14.5px;font-weight:600;color:var(--brand);cursor:pointer}
+  .feed .tt:hover{text-decoration:underline}
+  .feed .dd{font-size:13px;color:var(--ink-soft)}
+  .bdg{font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 8px;border-radius:99px;background:var(--green-soft);color:var(--green)}
+  .chart{display:flex;align-items:flex-end;gap:5px;height:150px;padding:10px 0 0}
+  .chart .bar{flex:1;background:#c8d8f8;border-radius:4px 4px 0 0;position:relative;cursor:pointer;min-width:10px}
+  .chart .bar:hover,.chart .bar.on{background:var(--brand)}
+  .chart .bar .tip{display:none;position:absolute;bottom:105%;left:50%;transform:translateX(-50%);background:#1d2430;color:#fff;font-size:11.5px;padding:4px 9px;border-radius:6px;white-space:nowrap;z-index:5}
+  .chart .bar:hover .tip{display:block}
+  .chart-x{display:flex;gap:5px;font-size:10px;color:var(--ink-soft)}
+  .chart-x span{flex:1;text-align:center;min-width:10px}
+
+  /* C: conversacional */
+  .conv{max-width:760px;margin:0 auto;text-align:center;padding-top:46px}
+  .conv h1{font-size:31px;font-weight:800;margin-bottom:6px}
+  .conv .sub{color:var(--ink-soft);margin-bottom:26px}
+  .profiles{display:flex;justify-content:center;gap:8px;margin-bottom:20px}
+  .profiles button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 16px;font-size:13.5px;cursor:pointer;font-family:inherit;color:var(--ink-soft)}
+  .profiles button.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600}
+  .exq{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+  .exq button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 15px;font-size:13.5px;cursor:pointer;color:var(--ink);font-family:inherit}
+  .exq button:hover{border-color:var(--brand);color:var(--brand)}
+  .preview{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-top:22px;display:none}
+  .preview .hd{font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--brand);margin-bottom:8px}
+  .preview p{font-size:14.5px;line-height:1.65}
+  .cite{display:inline-flex;align-items:center;gap:5px;background:var(--green-soft);color:var(--green);border-radius:7px;padding:1px 8px;font-size:12.5px;font-weight:700;white-space:nowrap;cursor:pointer}
+  .preview .more{font-size:13px;margin-top:10px}
+  .preview .more a{color:var(--brand);font-weight:600;text-decoration:none}
+  .modes{display:flex;justify-content:center;gap:14px;font-size:12.5px;color:var(--ink-soft);margin-top:10px}
+  .modes span b{color:var(--ink)}
+  footer.f{background:var(--navy);color:#9db4d4;margin-top:60px;padding:28px 0;font-size:13px}
+  footer.f .in{max-width:1180px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  footer.f a{color:#c9d6f2;text-decoration:none;display:block;margin-bottom:6px}
+  footer.f h6{color:#fff;font-size:11px;letter-spacing:.09em;text-transform:uppercase;margin-bottom:10px}
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;background:#1d4ed8;color:#fff;text-decoration:none;font:600 13.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;padding:11px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(29,78,216,.35)">← Voltar ao Menu</a>
+
+<div class="proto">
+  <div class="row1"><b>Protótipo · Área 4 — Home</b><span>· substitui o hero com contadores "-0 mil" e o scroll seccionado do HML</span></div>
+  <div class="optsel">
+    <button data-o="A" class="on"><span class="star">★</span> Opção A — Search-first sóbria (GOV.UK) · recomendada</button>
+    <button data-o="B">Opção B — Acervo vivo (dados como vitrine)</button>
+    <button data-o="C">Opção C — Porta conversacional</button>
+  </div>
+  <div class="optdesc" id="optdesc"></div>
+</div>
+
+<header class="site"><div class="in">
+  <div class="logo">Normas<span>.SP</span></div>
+  <nav class="hnav"><a href="#">Explorar acervo</a><a href="#">Diário Oficial</a><a href="#">Como funciona</a></nav>
+</div></header>
+
+<div class="wrap">
+
+<!-- ===== A ===== -->
+<div class="stage on" id="stA">
+  <div class="hero">
+    <h1>Legislação do Estado de São Paulo</h1>
+    <p><b>17.598 normas</b> consolidadas, atualizadas e verificáveis — da Constituição Estadual às portarias. Fonte oficial, sem intermediários.</p>
+  </div>
+  <div class="sbig"><div class="inp"><span style="color:var(--ink-soft)">⌕</span><input placeholder="Busque por assunto, número ou pergunta — ex.: transporte escolar"><button class="go">Pesquisar</button></div></div>
+  <div class="trust">✓ Cada norma é conferida contra o Diário Oficial e registrada em blockchain · <a href="#">como funciona</a></div>
+
+  <div class="cols">
+    <div class="panelc"><h4>Mais buscadas</h4>
+      <a class="item" href="#">IPVA — isenções e alíquotas<span class="n">Lei 13.296/08</span></a>
+      <a class="item" href="#">Transporte escolar<span class="n">Decreto 66.280/21</span></a>
+      <a class="item" href="#">Convênio médico — reajustes<span class="n">Lei 9.495/97</span></a>
+      <a class="item" href="#">Licenciamento ambiental<span class="n">Lei 17.293/20</span></a>
+    </div>
+    <div class="panelc"><h4>Publicadas esta semana</h4>
+      <a class="item" href="#">Decreto 70.611 — crédito suplementar à Saúde<span class="n">ontem</span></a>
+      <a class="item" href="#">Lei 18.502 — política de dados abertos<span class="n">terça</span></a>
+      <a class="item" href="#">Portaria DETRAN 142 — credenciamento<span class="n">segunda</span></a>
+      <a class="item" href="#" style="color:var(--brand);font-weight:600">Ver o Diário Oficial de hoje →</a>
+    </div>
+    <div class="panelc"><h4>Explorar por tema</h4>
+      <div class="chipsrow"><a href="#">Trânsito</a><a href="#">Educação</a><a href="#">Saúde</a><a href="#">Meio ambiente</a><a href="#">Tributos</a><a href="#">Servidores</a><a href="#">Segurança</a><a href="#">Habitação</a></div>
+      <h4 style="margin-top:18px">Por tipo</h4>
+      <div class="chipsrow"><a href="#">Leis</a><a href="#">Decretos</a><a href="#">Portarias</a><a href="#">Resoluções</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== B ===== -->
+<div class="stage" id="stB">
+  <div class="hero">
+    <h1>O acervo, vivo.</h1>
+    <p>A legislação paulista se move todos os dias. Acompanhe o que entra em vigor, o que muda e o que o Estado está produzindo — direto da fonte.</p>
+  </div>
+  <div class="sbig"><div class="inp"><span style="color:var(--ink-soft)">⌕</span><input placeholder="Buscar no acervo…"><button class="go">Pesquisar</button></div></div>
+
+  <div class="live">
+    <div class="panelc feed">
+      <h4>Hoje no Diário Oficial — 3 de julho de 2026</h4>
+      <div class="it"><div class="tm">08:12</div><div><div class="tt">Decreto nº 70.618</div><div class="dd">Regulamenta o programa estadual de eficiência energética em prédios públicos.</div></div><span class="bdg">NOVA</span></div>
+      <div class="it"><div class="tm">08:12</div><div><div class="tt">Lei nº 18.507</div><div class="dd">Altera a Lei 17.293/2020 — licenciamento simplificado para pequenos negócios.</div></div><span class="bdg">ALTERAÇÃO</span></div>
+      <div class="it"><div class="tm">08:11</div><div><div class="tt">Portaria CETESB nº 89</div><div class="dd">Atualiza procedimentos de renovação de licença de operação.</div></div><span class="bdg">NOVA</span></div>
+      <a class="item" href="#" style="color:var(--brand);font-weight:600;border:0;padding-top:12px">Ver todas as publicações de hoje (14) →</a>
+    </div>
+    <div class="panelc">
+      <h4>Produção normativa por ano <span style="letter-spacing:0;text-transform:none;font-weight:400">· clique para explorar</span></h4>
+      <div class="chart" id="chart"></div>
+      <div class="chart-x" id="chartx"></div>
+      <div style="font-size:12.5px;color:var(--ink-soft);margin-top:10px" id="chartMsg">2016 foi o ano de maior produção da série: 1.322 normas.</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="panelc"><h4>Em destaque — curadoria</h4>
+      <a class="item" href="#">O pacote de leis do clima de 2026<span class="n">5 normas</span></a>
+      <a class="item" href="#">30 anos do Código de Trânsito: o que mudou<span class="n">linha do tempo</span></a>
+    </div>
+    <div class="panelc"><h4>Entrou em vigor este mês</h4>
+      <a class="item" href="#">Lei 18.490 — piso estadual do magistério<span class="n">1º/jul</span></a>
+      <a class="item" href="#">Decreto 70.590 — tarifa social de transporte<span class="n">1º/jul</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== C ===== -->
+<div class="stage" id="stC">
+  <div class="conv">
+    <h1>O que você quer saber<br>da legislação de São Paulo?</h1>
+    <div class="sub">Pergunte com suas palavras, busque por número ou explore por tema — a resposta sempre cita a norma oficial.</div>
+    <div class="profiles">
+      <button class="on">👤 Sou cidadão</button><button>🏛 Sou servidor</button><button>⚖ Trabalho com direito</button>
+    </div>
+    <div class="sbig"><div class="inp"><span style="color:var(--ink-soft)">💬</span><input id="inpC" placeholder='Ex.: "posso instalar câmera na minha rua?"'><button class="go" id="goC">Perguntar</button></div></div>
+    <div class="exq">
+      <button>Preciso de licença para transporte escolar?</button>
+      <button>Qual lei criou a CETESB?</button>
+      <button>Como funciona a isenção de IPVA?</button>
+    </div>
+    <div class="modes"><span><b>Pergunta</b> → resposta com citações</span>·<span><b>Número</b> → vai direto à norma</span>·<span><b>Assunto</b> → busca clássica</span></div>
+
+    <div class="preview" id="prevC">
+      <div class="hd">RESPOSTA COM CITAÇÕES · gerada por IA, ancorada no texto oficial</div>
+      <p>Sim — o transporte escolar no Estado exige autorização e vistoria semestral do veículo, conforme o <span class="cite">CTB, art. 136 · EM VIGOR ✓</span>, e o credenciamento do condutor segue as regras da <span class="cite">Portaria DETRAN-SP 142/2026 · EM VIGOR ✓</span>.</p>
+      <div class="more"><a href="#">Ver resposta completa e as 12 normas relacionadas →</a></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer class="f"><div class="in">
+  <div><div class="logo" style="color:#fff">Normas<span style="color:#7ea6ff">.SP</span></div><div style="margin-top:8px;max-width:300px">Fonte oficial da legislação do Estado de São Paulo. Verificável, consolidada e aberta.</div></div>
+  <div><h6>Acervo</h6><a href="#">Buscar normas</a><a href="#">Explorar por tema</a><a href="#">Diário Oficial</a></div>
+  <div><h6>Confiança</h6><a href="#">Como garantimos a autenticidade</a><a href="#">Dados abertos e API</a><a href="#">Acessibilidade</a></div>
+  <div><h6>Institucional</h6><a href="#">Sobre o projeto</a><a href="#">Fale conosco</a><div style="margin-top:10px">© 2026 Governo do Estado de São Paulo</div></div>
+</div></footer>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+  const DESC={
+    A:'A (recomendada): hero enxuto + busca grande + top tasks reais (mais buscadas, publicadas esta semana, temas). Selo de confiança em linguagem simples no lugar do carrossel técnico. Scroll normal, rodapé completo, © 2026.',
+    B:'B: a home como painel do acervo — feed "hoje no Diário Oficial", gráfico interativo de produção por ano (passe o mouse / clique) e curadoria editorial. Demonstra "atualizado e confiável" com dados, não com adjetivos.',
+    C:'C: uma única porta que aceita pergunta, número ou assunto — com atalhos por perfil. Clique numa pergunta de exemplo para ver a resposta com citações. Evolução natural quando a busca conversacional (Área 2-C) estiver madura.'
+  };
+  $$('.optsel button').forEach(b=>b.onclick=()=>{
+    $$('.optsel button').forEach(x=>x.classList.toggle('on',x===b));
+    $$('.stage').forEach(s=>s.classList.remove('on'));
+    $('#st'+b.dataset.o).classList.add('on');
+    $('#optdesc').textContent=DESC[b.dataset.o];
+  });
+  $('#optdesc').textContent=DESC.A;
+
+  // gráfico da B
+  const YEARS=[['2010',480],['2012',530],['2014',610],['2016',1322],['2018',890],['2020',760],['2022',680],['2024',720],['2026',390]];
+  const max=Math.max(...YEARS.map(y=>y[1]));
+  $('#chart').innerHTML=YEARS.map(y=>`<div class="bar" style="height:${Math.round(y[1]/max*100)}%" data-y="${y[0]}" data-n="${y[1]}"><span class="tip">${y[0]}: ${y[1].toLocaleString('pt-BR')} normas</span></div>`).join('');
+  $('#chartx').innerHTML=YEARS.map(y=>`<span>${y[0].slice(2)}</span>`).join('');
+  $$('#chart .bar').forEach(b=>b.onclick=()=>{
+    $$('#chart .bar').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+    $('#chartMsg').innerHTML=`<b>${b.dataset.y}</b>: ${(+b.dataset.n).toLocaleString('pt-BR')} normas publicadas · <a href="#" style="color:var(--brand);font-weight:600">ver as normas de ${b.dataset.y} →</a>`;
+  });
+
+  // preview da C
+  const show=()=>{$('#prevC').style.display='block';$('#inpC').value='Preciso de licença para transporte escolar?'};
+  $('#goC').onclick=show;
+  $$('.exq button').forEach(b=>b.onclick=()=>{show();$('#inpC').value=b.textContent});
+})();
+</script>
+</body>
+</html>

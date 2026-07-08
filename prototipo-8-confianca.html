@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protótipo · Área 8 — Confiança & Tecnologia (A/B/C)</title>
+<style>
+  :root{--bg:#f7f8fa;--surface:#fff;--ink:#1d2430;--ink-soft:#5a6472;--line:#e4e7ec;--brand:#1d4ed8;--brand-soft:#eff4ff;--chip:#f2f4f7;--green:#0f7b3d;--green-soft:#e6f4ea;--amber:#92600a;--amber-soft:#fdf3df;--navy:#0d1b3e;--mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.55}
+  .proto{background:#0d1b3e;color:#c9d6f2;font-size:12.5px;padding:10px 20px}
+  .proto .row1{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  .proto b{color:#fff}
+  .optsel{display:flex;gap:8px;flex-wrap:wrap}
+  .optsel button{border:1px solid #2e447e;background:#122452;color:#c9d6f2;border-radius:99px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .optsel button.on{background:#fff;color:#0d1b3e;font-weight:700;border-color:#fff}
+  .optsel button .star{color:#ffc94d}
+  .optdesc{font-size:12px;color:#8fa4d4;margin-top:6px;max-width:960px}
+  header.site{background:var(--surface);border-bottom:1px solid var(--line)}
+  header.site .in{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-size:19px;font-weight:800}.logo span{color:var(--brand)}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px 90px}
+  .stage{display:none}.stage.on{display:block}
+
+  /* A — explicativo sóbrio */
+  .ahead{text-align:center;padding:46px 0 30px;max-width:720px;margin:0 auto}
+  .ahead .kk{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);font-weight:700}
+  .ahead h1{font-size:34px;font-weight:800;margin:10px 0 12px;letter-spacing:-.01em}
+  .ahead p{font-size:17px;color:var(--ink-soft);line-height:1.65}
+  .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:8px}
+  .pil{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .pil .ic{width:44px;height:44px;border-radius:11px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:21px;margin-bottom:14px}
+  .pil h3{font-size:16.5px;margin-bottom:7px}
+  .pil p{font-size:13.5px;color:var(--ink-soft);line-height:1.6}
+  .verify{background:var(--navy);color:#fff;border-radius:18px;padding:34px;margin-top:26px;text-align:center}
+  .verify h2{font-size:24px;font-weight:800;margin-bottom:8px}
+  .verify p{color:#c9d6f2;max-width:560px;margin:0 auto 18px}
+  .verify a{display:inline-block;background:#fff;color:var(--navy);text-decoration:none;font-weight:700;border-radius:11px;padding:12px 22px}
+
+  /* B — verifique você mesmo */
+  .demos{display:grid;gap:16px;margin-top:24px}
+  .demo{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .demo h3{font-size:16.5px;margin-bottom:4px}
+  .demo .lead{font-size:13.5px;color:var(--ink-soft);margin-bottom:14px}
+  .demo .io{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .demo input{flex:1;min-width:200px;border:1.5px solid var(--line);border-radius:10px;padding:11px 14px;font-family:var(--mono);font-size:13.5px}
+  .demo input:focus{outline:0;border-color:var(--brand)}
+  .demo button{background:var(--brand);color:#fff;border:0;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer;font-family:inherit}
+  .demo .out{margin-top:14px;font-family:var(--mono);font-size:13px;background:#0d1b3e;color:#8fe4b0;border-radius:10px;padding:14px 16px;display:none;word-break:break-all;line-height:1.7}
+  .demo .out.on{display:block}
+  .demo .out .g{color:#8fe4b0}.demo .out .m{color:#c9d6f2}
+
+  /* C — linha do tempo */
+  .flowline{position:relative;max-width:720px;margin:30px auto 0;padding-left:38px}
+  .flowline::before{content:"";position:absolute;left:14px;top:8px;bottom:8px;width:2px;background:var(--line)}
+  .fstep{position:relative;padding:0 0 26px}
+  .fstep .dot{position:absolute;left:-38px;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;box-shadow:0 0 0 4px var(--bg)}
+  .fstep h3{font-size:17px;margin-bottom:5px}
+  .fstep p{font-size:14px;color:var(--ink-soft);max-width:560px}
+  .fstep .tagx{display:inline-block;font-size:11px;font-weight:700;background:var(--brand-soft);color:var(--brand);border-radius:99px;padding:3px 10px;margin-top:8px}
+  .fstep.gr .dot{background:var(--green)} .fstep.gr .tagx{background:var(--green-soft);color:var(--green)}
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:6px;background:#1d4ed8;color:#fff;text-decoration:none;font:600 13.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;padding:11px 16px;border-radius:99px;box-shadow:0 6px 20px rgba(29,78,216,.35)">← Voltar ao Menu</a>
+
+<div class="proto">
+  <div class="row1"><b>Protótipo · Área 8 — Confiança &amp; Tecnologia</b><span>· tira blockchain/IA do hero de marketing e transforma em credibilidade demonstrável</span></div>
+  <div class="optsel">
+    <button data-o="A" class="on"><span class="star">★</span> Opção A — Explicativo sóbrio · recomendada</button>
+    <button data-o="B">Opção B — Verifique você mesmo</button>
+    <button data-o="C">Opção C — Linha do tempo da confiança</button>
+  </div>
+  <div class="optdesc" id="optdesc"></div>
+</div>
+
+<header class="site"><div class="in"><div class="logo">Normas<span>.SP</span></div><div style="font-size:13px;color:var(--ink-soft)">Confiança &amp; Tecnologia</div></div></header>
+
+<div class="wrap">
+
+<!-- ============ OPÇÃO A ============ -->
+<div class="stage on" id="stA">
+  <div class="ahead">
+    <div class="kk">Como garantimos</div>
+    <h1>Uma legislação à prova de adulteração</h1>
+    <p>Quatro mecanismos trabalham juntos para que cada norma seja consolidada, confiável e verificável — sem que você precise acreditar na nossa palavra.</p>
+  </div>
+  <div class="pillars">
+    <div class="pil"><div class="ic">✦</div><h3>Consolidação com IA</h3><p>Modelos de linguagem processam cada publicação do Diário Oficial e extraem a estrutura completa do texto — artigos, incisos, alterações ao longo do tempo.</p></div>
+    <div class="pil"><div class="ic">⛓</div><h3>Registro imutável</h3><p>Cada versão de cada dispositivo é registrada em blockchain permissionada (Hyperledger Besu) e em armazenamento WORM (grava uma vez, lê muitas).</p></div>
+    <div class="pil"><div class="ic">◇</div><h3>Grafo de relações</h3><p>Toda norma é um nó conectado às suas alterações, regulamentações e revogações, no vocabulário LexML Brasil.</p></div>
+    <div class="pil"><div class="ic">◷</div><h3>Auditoria contínua</h3><p>Logs monitoram cada operação em tempo real; qualquer alteração não autorizada dispara alerta e restauração a partir dos registros imutáveis.</p></div>
+  </div>
+  <div class="verify">
+    <h2>Não confie. Verifique.</h2>
+    <p>Cada norma carrega o hash criptográfico do arquivo original publicado no Diário Oficial. Você pode conferir a qualquer momento.</p>
+    <a href="/prototipo-6-verificar.html">Verificar uma norma →</a>
+  </div>
+</div>
+
+<!-- ============ OPÇÃO B ============ -->
+<div class="stage" id="stB">
+  <div class="ahead" style="padding-bottom:8px">
+    <div class="kk">Prova, não promessa</div>
+    <h1>Verifique você mesmo</h1>
+    <p>Em vez de explicar a tecnologia, deixamos você tocá-la. Cada mecanismo abaixo é demonstrável em segundos.</p>
+  </div>
+  <div class="demos">
+    <div class="demo">
+      <h3>1 · A impressão digital (hash)</h3>
+      <div class="lead">Mude um único caractere do texto e veja o hash mudar por completo — é assim que detectamos adulteração.</div>
+      <div class="io"><input id="hashIn" value="Decreto nº 70.525, de 7 de abril de 2025"><button id="hashBtn">Calcular hash</button></div>
+      <div class="out" id="hashOut"></div>
+    </div>
+    <div class="demo">
+      <h3>2 · O bloco na blockchain</h3>
+      <div class="lead">Cada norma tem um registro imutável. Veja o bloco onde ela está gravada.</div>
+      <div class="io"><input value="Decreto 70.525/2025" readonly><button id="blkBtn">Consultar bloco</button></div>
+      <div class="out" id="blkOut"></div>
+    </div>
+    <div class="demo">
+      <h3>3 · A referência no Diário Oficial</h3>
+      <div class="lead">A origem oficial de tudo: a publicação no DOE que deu origem à norma.</div>
+      <div class="io"><input value="Decreto 70.525/2025" readonly><button id="doBtn">Localizar no DOE</button></div>
+      <div class="out" id="doOut"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ OPÇÃO C ============ -->
+<div class="stage" id="stC">
+  <div class="ahead" style="padding-bottom:8px">
+    <div class="kk">Da publicação ao portal</div>
+    <h1>A jornada da confiança</h1>
+    <p>O caminho que cada norma percorre — do Diário Oficial até a tela — com um selo de integridade em cada etapa.</p>
+  </div>
+  <div class="flowline">
+    <div class="fstep"><div class="dot">1</div><h3>Publicação no Diário Oficial</h3><p>A norma nasce oficialmente no DOE. Esse é o documento-fonte, imutável por natureza.</p><span class="tagx">Fonte oficial</span></div>
+    <div class="fstep"><div class="dot">2</div><h3>Leitura e estruturação por IA</h3><p>Modelos de linguagem extraem artigos, incisos e alterações, montando a versão consolidada e navegável.</p><span class="tagx">IA · consolidação</span></div>
+    <div class="fstep"><div class="dot">3</div><h3>Cálculo do hash</h3><p>Uma impressão digital criptográfica (SHA-256) é gerada a partir do arquivo original.</p><span class="tagx">Integridade</span></div>
+    <div class="fstep gr"><div class="dot">4</div><h3>Registro imutável</h3><p>O hash é gravado em blockchain permissionada e em armazenamento WORM — não pode ser reescrito.</p><span class="tagx">Blockchain · WORM</span></div>
+    <div class="fstep gr"><div class="dot">✓</div><h3>Exibição verificável no portal</h3><p>Você lê a norma com selo de vigência e QR — e pode reverificar contra o DOE a qualquer momento.</p><span class="tagx">Verificável por você</span></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+  const DESC={
+    A:'A (recomendada): os 4 pilares (IA, blockchain, grafo, auditoria) explicados com sobriedade + o chamado "Não confie, verifique". Vira página de credibilidade — sai do hero da Home.',
+    B:'B: cada mecanismo é demonstrável na hora — calcule um hash, veja o bloco, ache a fonte no DOE. Confiança por prova, não por promessa. Experimente: edite o texto e recalcule o hash.',
+    C:'C: a linha do tempo da confiança — do Diário Oficial até o portal, etapa por etapa, com selo de integridade em cada passo.'
+  };
+  $$('.optsel button').forEach(b=>b.onclick=()=>{
+    $$('.optsel button').forEach(x=>x.classList.toggle('on',x===b));
+    $$('.stage').forEach(s=>s.classList.remove('on'));
+    $('#st'+b.dataset.o).classList.add('on');
+    $('#optdesc').textContent=DESC[b.dataset.o];
+  });
+  $('#optdesc').textContent=DESC.A;
+
+  /* hash demo — pseudo-hash determinístico só para ilustrar */
+  function pseudo(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}let out='';for(let i=0;i<8;i++){h=Math.imul(h^(h>>>13),0x01000193)>>>0;out+=('0000000'+h.toString(16)).slice(-8);}return out.slice(0,64);}
+  function fmt(hex){return hex.replace(/(.{4})/g,'$1 ').trim();}
+  $('#hashBtn').onclick=()=>{const v=$('#hashIn').value;$('#hashOut').innerHTML='<span class="m">SHA-256:</span> <span class="g">'+fmt(pseudo(v))+'</span>';$('#hashOut').classList.add('on');};
+  $('#blkBtn').onclick=()=>{$('#blkOut').innerHTML='<span class="m">Rede:</span> <span class="g">Hyperledger Besu (permissionada)</span><br><span class="m">Bloco:</span> <span class="g">#4.812.663</span><br><span class="m">Registrado em:</span> <span class="g">08/04/2025 03:11:07</span><br><span class="m">Status:</span> <span class="g">✓ hash confere · nunca reescrito</span>';$('#blkOut').classList.add('on');};
+  $('#doBtn').onclick=()=>{$('#doOut').innerHTML='<span class="m">Diário Oficial do Estado de São Paulo</span><br><span class="g">Caderno Executivo I · 08 de abril de 2025 · pág. 3</span><br><span class="m">Este é o documento-fonte imutável desta norma.</span>';$('#doOut').classList.add('on');};
+  $('#hashBtn').click();
+})();
+</script>
+</body>
+</html>
